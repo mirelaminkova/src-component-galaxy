@@ -17,6 +17,7 @@
       - name: galaxy
         owner: galaxy
     galaxy_config:
+      use_remote_user: true
       uwsgi:
         socket: 127.0.0.1:4001
         buffer-size: 16384
@@ -46,7 +47,7 @@
   pre_tasks:
     - name: Install Dependencies
       apt:
-        name: ['git', 'python3-psycopg2', 'python3-virtualenv']
+        name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl']
       become: yes
   roles:
     # Install with:
