@@ -3,6 +3,7 @@
     galaxy_config_style: yaml
     galaxy_layout: root-dir
     galaxy_root: /srv/galaxy
+    # galaxy_manage_systemd: yes
     galaxy_commit_id: v24.0.0
     galaxy_separate_privileges: yes
     galaxy_create_user: yes
@@ -10,6 +11,7 @@
     galaxy_user: galaxy
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
+    galaxy_use_prebuilt_client: yes
     postgresql_objects_users:
       - name: galaxy
         password: null
@@ -17,7 +19,8 @@
       - name: galaxy
         owner: galaxy
     galaxy_config:
-      use_remote_user: true
+      galaxy:
+        use_remote_user: true
       uwsgi:
         socket: 127.0.0.1:4001
         buffer-size: 16384
@@ -47,7 +50,7 @@
   pre_tasks:
     - name: Install Dependencies
       apt:
-        name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl']
+        name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
       become: yes
   roles:
     # Install with:
