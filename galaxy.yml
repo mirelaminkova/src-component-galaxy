@@ -1,0 +1,67 @@
+- hosts: localhost
+  vars:
+    galaxy_config_style: yaml
+    galaxy_layout: root-dir
+    galaxy_root: /srv/galaxy
+    galaxy_commit_id: v24.0.0
+    galaxy_separate_privileges: yes
+    galaxy_create_user: yes
+    galaxy_manage_paths: yes
+    galaxy_user: galaxy
+    galaxy_privsep_user: gxpriv
+    galaxy_group: galaxy
+    postgresql_objects_users:
+      - name: galaxy
+        password: null
+    postgresql_objects_databases:
+      - name: galaxy
+        owner: galaxy
+    galaxy_config:
+      uwsgi:
+        socket: 127.0.0.1:4001
+        buffer-size: 16384
+        processes: 1
+        threads: 4
+        offload-threads: 2
+        static-map:
+          - /static/style={{ galaxy_server_dir }}/static/style/blue
+          - /static={{ galaxy_server_dir }}/static
+        master: true
+        virtualenv: "{{ galaxy_venv_dir }}"
+        pythonpath: "{{ galaxy_server_dir }}/lib"
+        module: galaxy.webapps.galaxy.buildapp:uwsgi_app()
+        thunder-lock: true
+        die-on-term: true
+        hook-master-start:
+          - unix_signal:2 gracefully_kill_them_all
+          - unix_signal:15 gracefully_kill_them_all
+        py-call-osafterfork: true
+        enable-threads: true
+        mule:
+          - lib/galaxy/main.py
+          - lib/galaxy/main.py
+        farm: job-handlers:1,2
+      galaxy:
+        database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
+  pre_tasks:
+    - name: Install Dependencies
+      apt:
+        name: ['git', 'python3-psycopg2', 'python3-virtualenv']
+      become: yes
+  roles:
+    # Install with:
+    #   % ansible-galaxy install galaxyproject.postgresql
+    - role: galaxyproject.postgresql
+      become: yes
+    # Install with:
+    #   % ansible-galaxy install natefoo.postgresql_objects
+    - role: galaxyproject.postgresql_objects
+      become: yes
+      become_user: postgres
+    - role: galaxyproject.galaxy
+  handlers:
+    - name: Restart Galaxy
+      supervisorctl:
+        name: galaxy
+        state: restarted
+      listen: restart galaxy
