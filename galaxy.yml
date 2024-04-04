@@ -55,7 +55,7 @@
         name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
       become: yes
   tasks:
-    - include_role: {name: install_role } # workaround to install requirements.yml on SRC
+    - include_role: {name: install_roles } # workaround to install requirements.yml on SRC
     - include_role:
         name: galaxyproject.postgresql
         apply:
