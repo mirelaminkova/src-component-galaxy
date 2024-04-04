@@ -67,7 +67,7 @@
           become_user: postgres
     - include_role: {name: galaxyproject.galaxy }
   roles:
-    - nginx_reverse_proxy
+    - role: nginx-reverse_proxy
       vars:
         nginx_reverse_proxy_locations:
           - name: galaxy
@@ -76,7 +76,7 @@
             auth: sram
           - name: static
             location: /static
-            alias: "{{ galaxy_server_dir }}"/static
+            alias: "{{ galaxy_server_dir }}/static"
           - name: static_plugins
             location: "~ ^/plugins/(?<plug_type>.+?)/(?<vis_name>.+?)/static/(?<static_file>.*?)$"
             expires: '24'
