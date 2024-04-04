@@ -66,6 +66,20 @@
           become: yes
           become_user: postgres
     - include_role: {name: galaxyproject.galaxy }
+  roles:
+    - nginx_reverse_proxy
+      vars:
+        nginx_reverse_proxy_locations:
+          - name: galaxy
+            location: /
+            backend: http://localhost:8080/
+            auth: sram
+          - name: static
+            location: /static
+            alias: "{{ galaxy_server_dir }}"/static
+          - name: static_plugins
+            location: "~ ^/plugins/(?<plug_type>.+?)/(?<vis_name>.+?)/static/(?<static_file>.*?)$"
+            expires: '24'
   handlers:
     - name: Restart Galaxy
       supervisorctl:
