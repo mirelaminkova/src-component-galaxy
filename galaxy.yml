@@ -61,7 +61,7 @@
         apply:
           become: yes
     - include_role:
-        name: galaxyproject.objects
+        name: galaxyproject.postgresql_objects
         apply:
           become: yes
           become_user: postgres
@@ -72,4 +72,3 @@
         name: galaxy
         state: restarted
       listen: restart galaxy
-
