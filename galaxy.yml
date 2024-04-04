@@ -1,9 +1,11 @@
 - hosts: localhost
   vars:
     galaxy_config_style: yaml
-    galaxy_layout: root-dir
-    galaxy_root: /srv/galaxy
-    # galaxy_manage_systemd: yes
+    galaxy_layout: custom
+    galaxy_server_dir: /srv/galaxy
+    galaxy_venv_dir: "{{ galaxy_server_dir }}/.venv"
+    galaxy_mutable_data_dir: "{{ galaxy_storage_path | default(/srv/galaxy/datadir) }}" # component variable galaxy_storage_path
+    galaxy_manage_systemd: yes
     galaxy_commit_id: v24.0.0
     galaxy_separate_privileges: yes
     galaxy_create_user: yes
@@ -53,12 +55,8 @@
         name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
       become: yes
   roles:
-    # Install with:
-    #   % ansible-galaxy install galaxyproject.postgresql
     - role: galaxyproject.postgresql
       become: yes
-    # Install with:
-    #   % ansible-galaxy install natefoo.postgresql_objects
     - role: galaxyproject.postgresql_objects
       become: yes
       become_user: postgres
