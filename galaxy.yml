@@ -54,16 +54,22 @@
       apt:
         name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
       become: yes
-  roles:
-    - role: galaxyproject.postgresql
-      become: yes
-    - role: galaxyproject.postgresql_objects
-      become: yes
-      become_user: postgres
-    - role: galaxyproject.galaxy
+  tasks:
+    - include_role: {name: install_role } # workaround to install requirements.yml on SRC
+    - include_role:
+        name: galaxyproject.postgresql
+        apply:
+          become: yes
+    - include_role:
+        name: galaxyproject.objects
+        apply:
+          become: yes
+          become_user: postgres
+    - include_role: {name: galaxyproject.galaxy }
   handlers:
     - name: Restart Galaxy
       supervisorctl:
         name: galaxy
         state: restarted
       listen: restart galaxy
+
