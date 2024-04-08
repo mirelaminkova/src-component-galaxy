@@ -26,32 +26,30 @@
     galaxy_config:
       galaxy:
         use_remote_user: true
-      uwsgi:
-        socket: 127.0.0.1:4001
-        buffer-size: 16384
-        processes: 1
-        threads: 4
-        offload-threads: 2
-        static-map:
-          - /static/style={{ galaxy_server_dir }}/static/style/blue
-          - /static={{ galaxy_server_dir }}/static
-        master: true
-        virtualenv: "{{ galaxy_venv_dir }}"
-        pythonpath: "{{ galaxy_server_dir }}/lib"
-        module: galaxy.webapps.galaxy.buildapp:uwsgi_app()
-        thunder-lock: true
-        die-on-term: true
-        hook-master-start:
-          - unix_signal:2 gracefully_kill_them_all
-          - unix_signal:15 gracefully_kill_them_all
-        py-call-osafterfork: true
-        enable-threads: true
-        mule:
-          - lib/galaxy/main.py
-          - lib/galaxy/main.py
-        farm: job-handlers:1,2
-      galaxy:
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
+      gravity:
+        process_manager: systemd
+        gunicorn:
+          # listening options
+          bind: "unix:{{ _src_galaxy_root }}/gunicorn.sock"
+          # performance options
+          workers: 2
+          # Other options that will be passed to gunicorn
+          # This permits setting of 'secure' headers like REMOTE_USER (and friends)
+          # https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips
+          extra_args: '--forwarded-allow-ips="*"'
+          # This lets Gunicorn start Galaxy completely before forking which is faster.
+          # https://docs.gunicorn.org/en/stable/settings.html#preload-app
+          preload: true
+        celery:
+          concurrency: 2
+          loglevel: DEBUG
+        handlers:
+          handler:
+            processes: 2
+            pools:
+              - job-handlers
+              - workflow-schedulers
   pre_tasks:
     - name: Install Dependencies
       apt:
@@ -61,6 +59,8 @@
       service:
         name: supervisor
         state: started
+      become: yes
+      become-user: "{{ galaxy_user }}"
   tasks:
     - include_role: {name: install_roles } # workaround to install requirements.yml on SRC
     - include_role:
@@ -87,9 +87,3 @@
           - name: static_plugins
             location: "~ ^/plugins/(?<plug_type>.+?)/(?<vis_name>.+?)/static/(?<static_file>.*?)$"
             expires: '24'
-  handlers:
-    - name: Restart Galaxy
-      supervisorctl:
-        name: galaxy
-        state: restarted
-      listen: restart galaxy
