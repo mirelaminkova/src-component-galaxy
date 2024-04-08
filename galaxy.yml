@@ -13,7 +13,7 @@
     galaxy_user: galaxy
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
-    galaxy_use_prebuilt_client: yes
+    galaxy_client_use_prebuilt: yes
     postgresql_objects_users:
       - name: galaxy
         password: null
