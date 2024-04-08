@@ -4,11 +4,12 @@
     galaxy_config_style: yaml
     galaxy_layout: custom
     galaxy_server_dir: "{{ _src_galaxy_root }}/server"
+    galaxy_root_dir: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
     galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
     galaxy_config_dir: "{{ _src_galaxy_root }}/config"
     galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir') }}" # component variable src_galaxy_storage_path
     galaxy_manage_systemd: yes
-    galaxy_commit_id: v24.0.0
+    galaxy_commit_id: "v{{ src_galaxy_version | default('24.0.0'} }" # component variable src_galaxy_version
     galaxy_separate_privileges: yes
     galaxy_create_user: yes
     galaxy_manage_paths: yes
@@ -56,6 +57,10 @@
       apt:
         name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
       become: yes
+    - name: Run supervisord
+      service:
+        name: supervisor
+        state: started
   tasks:
     - include_role: {name: install_roles } # workaround to install requirements.yml on SRC
     - include_role:
@@ -67,7 +72,7 @@
         apply:
           become: yes
           become_user: postgres
-    - include_role: {name: galaxyproject.galaxy }
+    - include_role: { name: galaxyproject.galaxy }
   roles:
     - role: nginx-reverse_proxy
       vars:
