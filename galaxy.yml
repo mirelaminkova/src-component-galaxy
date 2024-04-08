@@ -55,12 +55,6 @@
       apt:
         name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
       become: yes
-    - name: Run supervisord
-      service:
-        name: supervisor
-        state: started
-      become: yes
-      become-user: "{{ galaxy_user }}"
   tasks:
     - include_role: {name: install_roles } # workaround to install requirements.yml on SRC
     - include_role:
