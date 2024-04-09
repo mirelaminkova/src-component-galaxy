@@ -1,4 +1,5 @@
-- hosts: "{{ lookup('env', 'variable_host') | default('localhost', true) }}" # workaround because SRC needs localhost, but molecule needs specifc hostvars
+- name: Install Galaxy Server
+  hosts: "{{ lookup('env', 'variable_host') | default('localhost', true) }}" # workaround because SRC needs localhost, but molecule needs specifc hostvars
   vars:
     galaxy_config_style: yaml
     galaxy_layout: custom
@@ -8,16 +9,15 @@
     galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
     galaxy_config_dir: "{{ _src_galaxy_root }}/config"
     galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir') }}" # component variable src_galaxy_storage_path
-    #galaxy_manage_systemd: yes
     galaxy_commit_id: "v{{ src_galaxy_version | default('24.0.0') }}" # component variable src_galaxy_version
-    galaxy_separate_privileges: yes
-    galaxy_create_user: yes
-    galaxy_manage_paths: yes
+    galaxy_separate_privileges: true
+    galaxy_create_user: true
+    galaxy_manage_paths: true
     galaxy_clone_depth: 1
     galaxy_user: galaxy
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
-    galaxy_client_use_prebuilt: yes
+    galaxy_client_use_prebuilt: true
     postgresql_objects_users:
       - name: galaxy
         password: null
@@ -75,15 +75,22 @@
 
   tasks:
 
-    - include_role: { name: install_roles } # workaround to install requirements.yml on SRC
+    - name: Workaround to install requirements.yml on SURF ResearchCloud
+      ansible.builtin.include_role: { name: install_roles }
       tags: molecule-notest
-    - include_role: { name: galaxyproject.postgresql }
-    - include_role:
+
+    - name: Include role installed using install_roles workaround
+      ansible.builtin.include_role: { name: galaxyproject.postgresql }
+
+    - name: Include role installed using install_roles workaround
+      ansible.builtin.include_role:
         name: galaxyproject.postgresql_objects
         apply:
-          become: yes
+          become: true
           become_user: postgres
-    - include_role: { name: galaxyproject.galaxy }
+    - name: Include role installed using install_roles workaround
+      ansible.builtin.include_role: { name: galaxyproject.galaxy }
+
   roles:
     - role: nginx-reverse_proxy
       tags: molecule-notest

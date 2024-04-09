@@ -8,7 +8,7 @@ driver:
       credentials:
         username: $DOCKER_USER
         password: $DOCKER_PW
-platforms: 
+platforms:
   - name: workspace-src-ubuntu_jammy
     image: ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_jammy
     <<: *image_settings

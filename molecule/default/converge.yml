@@ -5,4 +5,3 @@
 
 - name: Run playbook as test
   ansible.builtin.import_playbook: ../../galaxysrv.yml
-
