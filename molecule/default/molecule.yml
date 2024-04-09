@@ -8,10 +8,15 @@ driver:
       credentials:
         username: $DOCKER_USER
         password: $DOCKER_PW
-platforms: # Test on ubuntu focal and jammy by default
+platforms: 
   - name: workspace-src-ubuntu_jammy
-    image: ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_focal
+    image: ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_jammy
     <<: *image_settings
     command: /sbin/init
+    platform: linux/amd64
     publish:
       - "8080:8080"
+provisioner:
+  name: ansible
+  env:
+    variable_host: all

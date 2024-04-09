@@ -3,6 +3,10 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
     - name: Update ansible
       ansible.builtin.pip:
         name: ansible

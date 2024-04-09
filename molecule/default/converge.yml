@@ -2,6 +2,7 @@
 - name: Converge
   hosts: all
   gather_facts: false
-  tasks:
-    - name: Run playbook as test
-      ansible.builtin.import_playbook: ../../galaxy.yml
+
+- name: Run playbook as test
+  ansible.builtin.import_playbook: ../../galaxysrv.yml
+
