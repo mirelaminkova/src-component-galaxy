@@ -1,18 +1,19 @@
-- hosts: localhost
+- hosts: "{{ lookup('env', 'variable_host') | default('localhost', true) }}" # workaround because SRC needs localhost, but molecule needs specifc hostvars
   vars:
-    _src_galaxy_root: "{{ src_galaxy_root | default('/srv/galaxy') }}" # component variable src_galaxy_root
     galaxy_config_style: yaml
     galaxy_layout: custom
+    _src_galaxy_root: /srv/galaxy
     galaxy_server_dir: "{{ _src_galaxy_root }}/server"
-    galaxy_root_dir: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
+    galaxy_root: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
     galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
     galaxy_config_dir: "{{ _src_galaxy_root }}/config"
     galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir') }}" # component variable src_galaxy_storage_path
-    galaxy_manage_systemd: yes
+    #galaxy_manage_systemd: yes
     galaxy_commit_id: "v{{ src_galaxy_version | default('24.0.0') }}" # component variable src_galaxy_version
     galaxy_separate_privileges: yes
     galaxy_create_user: yes
     galaxy_manage_paths: yes
+    galaxy_clone_depth: 1
     galaxy_user: galaxy
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
@@ -26,8 +27,12 @@
     galaxy_config:
       galaxy:
         use_remote_user: true
+        remote_user_maildomain: "src.surf-hosted.nl/"
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
       gravity:
+        galaxy_root: "{{ _src_galaxy_root }}"
+        galaxy_user: "{{ galaxy_user }}"
+        virtualenv: "{{ galaxy_venv_dir }}"
         process_manager: systemd
         gunicorn:
           # listening options
@@ -43,6 +48,11 @@
           preload: true
         celery:
           concurrency: 2
+          enable_beat: true
+          enable: true
+          queues: celery,galaxy.internal,galaxy.external
+          pool: threads
+          memory_limit: 2
           loglevel: DEBUG
         handlers:
           handler:
@@ -52,15 +62,22 @@
               - workflow-schedulers
   pre_tasks:
     - name: Install Dependencies
-      apt:
-        name: ['git', 'python3-psycopg2', 'python3-virtualenv', 'acl', 'supervisor']
-      become: yes
+      ansible.builtin.apt:
+        name:
+          - 'git'
+          - 'python3-psycopg2'
+          - 'python3-virtualenv'
+          - 'python3-dev'
+          - 'gcc'
+          - 'acl'
+          - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
+        state: present
+
   tasks:
-    - include_role: {name: install_roles } # workaround to install requirements.yml on SRC
-    - include_role:
-        name: galaxyproject.postgresql
-        apply:
-          become: yes
+
+    - include_role: { name: install_roles } # workaround to install requirements.yml on SRC
+      tags: molecule-notest
+    - include_role: { name: galaxyproject.postgresql }
     - include_role:
         name: galaxyproject.postgresql_objects
         apply:
@@ -69,6 +86,7 @@
     - include_role: { name: galaxyproject.galaxy }
   roles:
     - role: nginx-reverse_proxy
+      tags: molecule-notest
       vars:
         nginx_reverse_proxy_locations:
           - name: galaxy
