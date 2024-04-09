@@ -117,6 +117,12 @@
         line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
       when: detect_nginx_upstream.found == 0
 
+    - name: Add nginx user to galaxy group
+      user:
+        name: www-data
+        groups: galaxy
+        append: true
+
   tasks:
 
     - name: Workaround to install requirements.yml on SURF ResearchCloud
