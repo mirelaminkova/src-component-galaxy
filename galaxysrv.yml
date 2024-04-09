@@ -93,18 +93,6 @@
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
-    - name: Create directory for Galaxy socket
-      ansible.builtin.file:
-        path: "{{ gunicorn_socket_dir }}"
-        group: www-data
-        mode: '750'
-        state: directory
-  
-    - name: Add Galaxy socket as upstream proxy backend
-      ansible.builtin.lineinfile:
-        path: /etc/nginx/conf.d/ssl_main.conf
-        insertafter: EOF
-        line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
   tasks:
 
     - name: Workaround to install requirements.yml on SURF ResearchCloud
@@ -122,6 +110,28 @@
           become_user: postgres
     - name: Include role installed using install_roles workaround
       ansible.builtin.include_role: { name: galaxyproject.galaxy }
+
+    - name: Create directory for Galaxy socket
+      ansible.builtin.file:
+        path: "{{ gunicorn_socket_dir }}"
+        group: www-data
+        mode: '750'
+        state: directory
+
+    - name: Find Galaxy socket upstream definition
+      ansible.builtin.lineinfile:
+        path: /etc/nginx/conf.d/ssl_main.conf
+        line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
+      check_mode: true
+      changed_when: false
+      register: detect_nginx_upstream
+
+    - name: Add Galaxy socket upstream definition
+      ansible.builtin.lineinfile:
+        path: /etc/nginx/conf.d/ssl_main.conf
+        insertafter: EOF
+        line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
+      when: detect_nginx_upstream.found == 0
 
   roles:
     - role: nginx-reverse_proxy
