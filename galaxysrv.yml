@@ -121,6 +121,7 @@
     - name: Find Galaxy socket upstream definition
       ansible.builtin.lineinfile:
         path: /etc/nginx/conf.d/ssl_main.conf
+        state: absent
         line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
       check_mode: true
       changed_when: false
