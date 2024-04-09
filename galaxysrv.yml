@@ -9,7 +9,7 @@
     galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
     galaxy_config_dir: "{{ _src_galaxy_root }}/config"
     galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir') }}" # component variable src_galaxy_storage_path
-    galaxy_commit_id: "v{{ src_galaxy_version | default('24.0.0') }}" # component variable src_galaxy_version
+    galaxy_commit_id: "release_{{ src_galaxy_version | default('23.0') }}" # component variable src_galaxy_version
     galaxy_separate_privileges: true
     galaxy_create_user: true
     galaxy_manage_paths: true
@@ -18,6 +18,7 @@
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
     galaxy_client_use_prebuilt: true
+    galaxy_systemd_root: true
     postgresql_objects_users:
       - name: galaxy
         password: null
@@ -31,7 +32,7 @@
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
         file_path: "{{ galaxy_mutable_data_dir }}/datasets"
       gravity:
-        galaxy_root: "{{ _src_galaxy_root }}"
+        galaxy_root: "{{ galaxy_server_dir }}"
         galaxy_user: "{{ galaxy_user }}"
         virtualenv: "{{ galaxy_venv_dir }}"
         process_manager: systemd
