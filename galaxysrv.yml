@@ -56,7 +56,7 @@
         process_manager: systemd
         gunicorn:
           # listening options
-          bind: "unix:/{{ gunicorn_socket_dir }}/gunicorn.sock"
+          bind: "unix:{{ gunicorn_socket_dir }}/gunicorn.sock"
           # performance options
           workers: 2
           # Other options that will be passed to gunicorn
@@ -96,6 +96,7 @@
     - name: Create directory for Galaxy socket
       ansible.builtin.file:
         path: "{{ gunicorn_socket_dir }}"
+        owner: galaxy
         group: www-data
         mode: '750'
         state: directory
@@ -104,7 +105,7 @@
       ansible.builtin.lineinfile:
         path: /etc/nginx/conf.d/ssl_main.conf
         state: absent
-        line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
+        line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
       check_mode: true
       changed_when: false
       register: detect_nginx_upstream
@@ -113,7 +114,7 @@
       ansible.builtin.lineinfile:
         path: /etc/nginx/conf.d/ssl_main.conf
         insertafter: EOF
-        line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
+        line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
       when: detect_nginx_upstream.found == 0
 
   tasks:
