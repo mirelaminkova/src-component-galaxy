@@ -18,7 +18,7 @@
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
     galaxy_client_use_prebuilt: true
-    galaxy_systemd_root: true
+    galaxy_systemd_root: false
     postgresql_objects_users:
       - name: galaxy
         password: null
@@ -38,7 +38,7 @@
         process_manager: systemd
         gunicorn:
           # listening options
-          bind: "unix:{{ _src_galaxy_root }}/gunicorn.sock"
+          bind: "unix:/home/{{ galaxy_user }}/gunicorn.sock"
           # performance options
           workers: 2
           # Other options that will be passed to gunicorn
