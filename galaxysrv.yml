@@ -27,8 +27,9 @@
     galaxy_config:
       galaxy:
         use_remote_user: true
-        remote_user_maildomain: "src.surf-hosted.nl/"
+        remote_user_maildomain: "src.surf-hosted.nl"
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
+        file_path: "{{ galaxy_mutable_data_dir }}/datasets"
       gravity:
         galaxy_root: "{{ _src_galaxy_root }}"
         galaxy_user: "{{ galaxy_user }}"
