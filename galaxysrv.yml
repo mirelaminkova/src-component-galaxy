@@ -147,6 +147,8 @@
           - name: static
             location: /static
             alias: "{{ galaxy_server_dir }}/static"
+            auth: noauth
           - name: static_plugins
             location: "~ ^/plugins/(?<plug_type>.+?)/(?<vis_name>.+?)/static/(?<static_file>.*?)$"
             expires: '24'
+            auth: noauth
