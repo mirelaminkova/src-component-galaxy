@@ -25,7 +25,9 @@
     postgresql_objects_databases:
       - name: galaxy
         owner: galaxy
-    gunicorn_socket_dir: /srv/run
+    gunicorn_socket_dir: "{{ _src_galaxy_root}}/run"
+    galaxy_extra_dirs:
+      - "{{ gunicorn_socket_dir }}"
     galaxy_job_config:
       runners:
         local_runner:
@@ -92,36 +94,26 @@
           - 'acl'
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
+  
+    - name: Set Galaxy socket upstream definition
+      tags: molecule-notest
+      block:
 
-    - name: Create directory for Galaxy socket
-      ansible.builtin.file:
-        path: "{{ gunicorn_socket_dir }}"
-        owner: galaxy
-        group: www-data
-        mode: '750'
-        state: directory
+      - name: Find Galaxy socket upstream definition
+        ansible.builtin.lineinfile:
+          path: /etc/nginx/conf.d/ssl_main.conf
+          state: absent
+          line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
+        check_mode: true
+        changed_when: false
+        register: detect_nginx_upstream
 
-    - name: Find Galaxy socket upstream definition
-      ansible.builtin.lineinfile:
-        path: /etc/nginx/conf.d/ssl_main.conf
-        state: absent
-        line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
-      check_mode: true
-      changed_when: false
-      register: detect_nginx_upstream
-
-    - name: Add Galaxy socket upstream definition
-      ansible.builtin.lineinfile:
-        path: /etc/nginx/conf.d/ssl_main.conf
-        insertafter: EOF
-        line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
-      when: detect_nginx_upstream.found == 0
-
-    - name: Add nginx user to galaxy group
-      user:
-        name: www-data
-        groups: galaxy
-        append: true
+      - name: Add Galaxy socket upstream definition
+        ansible.builtin.lineinfile:
+          path: /etc/nginx/conf.d/ssl_main.conf
+          insertafter: EOF
+          line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
+        when: detect_nginx_upstream.found == 0
 
   tasks:
 
@@ -138,9 +130,17 @@
         apply:
           become: true
           become_user: postgres
+  
     - name: Include role installed using install_roles workaround
       ansible.builtin.include_role: { name: galaxyproject.galaxy }
 
+    - name: Add nginx user to galaxy group
+      user:
+        name: www-data
+        groups: "{{ galaxy_user }}"
+        append: true
+      tags: molecule-notest
+    
   roles:
     - role: nginx-reverse_proxy
       tags: molecule-notest
