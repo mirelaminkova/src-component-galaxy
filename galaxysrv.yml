@@ -25,12 +25,29 @@
     postgresql_objects_databases:
       - name: galaxy
         owner: galaxy
+    galaxy_job_config:
+      runners:
+        local_runner:
+          load: galaxy.jobs.runners.local:LocalJobRunner
+          workers: 4
+      handling:
+        assign: ['db-skip-locked']
+      execution:
+        default: local_env
+        environments:
+          local_env:
+            runner: local_runner
+            tmp_dir: true
+      tools:
+        - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
+          environment: local_env
     galaxy_config:
       galaxy:
         use_remote_user: true
         remote_user_maildomain: "src.surf-hosted.nl"
         database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
         file_path: "{{ galaxy_mutable_data_dir }}/datasets"
+        job_config: "{{ galaxy_job_config }}"
       gravity:
         galaxy_root: "{{ galaxy_server_dir }}"
         galaxy_user: "{{ galaxy_user }}"
