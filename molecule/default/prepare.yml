@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Update ansible
+      ansible.builtin.pip:
+        name: ansible
+        version: 9.4.0
+        state: present

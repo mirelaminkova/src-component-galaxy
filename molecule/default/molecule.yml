@@ -1,0 +1,17 @@
+---
+driver:
+  name: podman
+  image_settings: &image_settings
+    pre_build_image: true
+    registry:
+      url: $DOCKER_REGISTRY
+      credentials:
+        username: $DOCKER_USER
+        password: $DOCKER_PW
+platforms: # Test on ubuntu focal and jammy by default
+  - name: workspace-src-ubuntu_jammy
+    image: ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_focal
+    <<: *image_settings
+    command: /sbin/init
+    publish:
+      - "8080:8080"
