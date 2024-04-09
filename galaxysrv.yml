@@ -93,6 +93,13 @@
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
+    - name: Create directory for Galaxy socket
+      ansible.builtin.file:
+        path: "{{ gunicorn_socket_dir }}"
+        group: www-data
+        mode: '750'
+        state: directory
+
     - name: Find Galaxy socket upstream definition
       ansible.builtin.lineinfile:
         path: /etc/nginx/conf.d/ssl_main.conf
@@ -126,13 +133,6 @@
           become_user: postgres
     - name: Include role installed using install_roles workaround
       ansible.builtin.include_role: { name: galaxyproject.galaxy }
-
-    - name: Create directory for Galaxy socket
-      ansible.builtin.file:
-        path: "{{ gunicorn_socket_dir }}"
-        group: www-data
-        mode: '750'
-        state: directory
 
   roles:
     - role: nginx-reverse_proxy
