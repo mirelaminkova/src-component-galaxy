@@ -18,13 +18,14 @@
     galaxy_privsep_user: gxpriv
     galaxy_group: galaxy
     galaxy_client_use_prebuilt: true
-    galaxy_systemd_root: false
+    galaxy_systemd_root: true
     postgresql_objects_users:
       - name: galaxy
         password: null
     postgresql_objects_databases:
       - name: galaxy
         owner: galaxy
+    gunicorn_socket_dir: /srv/run
     galaxy_job_config:
       runners:
         local_runner:
@@ -55,7 +56,7 @@
         process_manager: systemd
         gunicorn:
           # listening options
-          bind: "unix:/home/{{ galaxy_user }}/gunicorn.sock"
+          bind: "unix:/{{ gunicorn_socket_dir }}/gunicorn.sock"
           # performance options
           workers: 2
           # Other options that will be passed to gunicorn
@@ -92,6 +93,18 @@
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
+    - name: Create directory for Galaxy socket
+      ansible.builtin.file:
+        path: "{{ gunicorn_socket_dir }}"
+        group: www-data
+        mode: '750'
+        state: directory
+  
+    - name: Add Galaxy socket as upstream proxy backend
+      ansible.builtin.lineinfile:
+        path: /etc/nginx/conf.d/ssl_main.conf
+        insertafter: EOF
+        line: "upstream galaxy { server unix:{{ galaxy_config.gravity.gunicorn.bind }}; }"
   tasks:
 
     - name: Workaround to install requirements.yml on SURF ResearchCloud
@@ -117,7 +130,7 @@
         nginx_reverse_proxy_locations:
           - name: galaxy
             location: /
-            backend: http://localhost:8080/
+            backend: http://galaxy
             auth: sram
           - name: static
             location: /static
