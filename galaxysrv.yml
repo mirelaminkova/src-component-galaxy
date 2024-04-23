@@ -6,6 +6,7 @@
     _src_galaxy_root: /srv/galaxy
     galaxy_server_dir: "{{ _src_galaxy_root }}/server"
     galaxy_root: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
+    galaxy_manage_systemd: true
     galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
     galaxy_config_dir: "{{ _src_galaxy_root }}/config"
     galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir', true) }}" # component variable src_galaxy_storage_path
@@ -95,7 +96,7 @@
           - 'acl'
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
-  
+
     - name: Set Galaxy socket upstream definition
       tags: molecule-notest
       block:
@@ -143,17 +144,17 @@
       tags: molecule-notest
       notify: restart nginx
   
-  post_tasks:
+  # post_tasks:
 
-    - name: Get Galaxy service Status
-      ansible.builtin.systemd:
-        name: "galaxy.target"
-      check_mode: true
-      register: galaxy_status
+  #   - name: Get Galaxy service Status
+  #     ansible.builtin.systemd:
+  #       name: "galaxy.target"
+  #     check_mode: true
+  #     register: galaxy_status
 
-    - name: Galaxy gravity start
-      command: "/usr/local/bin/galaxyctl start"
-      when: "galaxy_status.status.ActiveState == 'inactive'"
+  #   - name: Galaxy gravity start
+  #     command: "/usr/local/bin/galaxyctl start"
+  #     when: "galaxy_status.status.ActiveState == 'inactive'"
 
   roles:
     - role: nginx-reverse_proxy
@@ -180,7 +181,3 @@
         name: nginx
         state: restarted
       listen: restart nginx
-
-    - name: Galaxy gravity restart
-      command: "/usr/local/bin/galaxyctl graceful"
-      listen: "restart galaxy"
