@@ -2,7 +2,7 @@
   hosts: "{{ lookup('env', 'variable_host') | default('localhost', true) }}" # workaround because SRC needs localhost, but molecule needs specifc hostvars
   vars:
     _galaxy_remote_user_maildomain: "src.surf-hosted.nl"
-    _galaxy_admin_co_group: "src_co_admin"
+    _galaxy_admin_co_group: "src_ws_admin"
 
   pre_tasks:
     - name: Gather CO info facts
