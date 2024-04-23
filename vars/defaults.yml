@@ -1,0 +1,83 @@
+galaxy_config_style: yaml
+galaxy_layout: custom
+_src_galaxy_root: /srv/galaxy
+galaxy_server_dir: "{{ _src_galaxy_root }}/server"
+galaxy_root: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
+galaxy_manage_systemd: true
+galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
+galaxy_config_dir: "{{ _src_galaxy_root }}/config"
+galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir', true) }}" # component variable src_galaxy_storage_path
+galaxy_commit_id: "release_{{ src_galaxy_version | default('23.0', true) }}" # component variable src_galaxy_version
+galaxy_separate_privileges: true
+galaxy_create_user: true
+galaxy_manage_paths: true
+galaxy_clone_depth: 1
+galaxy_user: galaxy
+galaxy_privsep_user: gxpriv
+galaxy_group: galaxy
+galaxy_client_use_prebuilt: true
+galaxy_systemd_root: true
+postgresql_objects_users:
+  - name: galaxy
+    password: null
+postgresql_objects_databases:
+  - name: galaxy
+    owner: galaxy
+gunicorn_socket_dir: "{{ _src_galaxy_root}}/run"
+galaxy_extra_dirs:
+  - "{{ gunicorn_socket_dir }}"
+galaxy_job_config:
+  runners:
+    local_runner:
+      load: galaxy.jobs.runners.local:LocalJobRunner
+      workers: 4
+  handling:
+    assign: ['db-skip-locked']
+  execution:
+    default: local_env
+    environments:
+      local_env:
+        runner: local_runner
+        tmp_dir: true
+  tools:
+    - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
+      environment: local_env
+galaxy_config:
+  galaxy:
+    use_remote_user: true
+    admin_users: "{{ _galaxy_admins }}"
+    remote_user_maildomain: "{{ _galaxy_remote_user_maildomain }}"
+    database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
+    file_path: "{{ galaxy_mutable_data_dir }}/datasets"
+    job_config: "{{ galaxy_job_config }}"
+  gravity:
+    galaxy_root: "{{ galaxy_server_dir }}"
+    galaxy_user: "{{ galaxy_user }}"
+    virtualenv: "{{ galaxy_venv_dir }}"
+    process_manager: systemd
+    gunicorn:
+      # listening options
+      bind: "unix:{{ gunicorn_socket_dir }}/gunicorn.sock"
+      # performance options
+      workers: 2
+      # Other options that will be passed to gunicorn
+      # This permits setting of 'secure' headers like REMOTE_USER (and friends)
+      # https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips
+      extra_args: '--forwarded-allow-ips="*"'
+      # This lets Gunicorn start Galaxy completely before forking which is faster.
+      # https://docs.gunicorn.org/en/stable/settings.html#preload-app
+      preload: true
+    celery:
+      concurrency: 2
+      enable_beat: true
+      enable: true
+      queues: celery,galaxy.internal,galaxy.external
+      pool: threads
+      memory_limit: 2
+      loglevel: DEBUG
+    handlers:
+      handler:
+        processes: 2
+        pools:
+          - job-handlers
+          - workflow-schedulers
