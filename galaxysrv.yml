@@ -5,6 +5,7 @@
     _galaxy_admin_co_group: "src_ws_admin"
 
   pre_tasks:
+
     - name: Gather CO info facts
       ansible.builtin.include_role: {name: fact_workspace_info }
       tags: molecule-notest
@@ -119,3 +120,7 @@
         name: nginx
         state: restarted
       listen: restart nginx
+
+    - name: Galaxy gravity restart
+      command: "/usr/local/bin/galaxyctl graceful"
+      listen: "restart galaxy"
