@@ -6,24 +6,8 @@
 
   pre_tasks:
 
-    - name: Gather CO info facts
-      ansible.builtin.include_role: {name: fact_workspace_info }
-      tags: molecule-notest
-
-    - name: Set admins
-      block:
-        - name: Set admins from CO group
-          ansible.builtin.set_fact:
-            _galaxy_admins: "{{ fact_co_groups[_galaxy_admin_co_group] | product(['@' + _galaxy_remote_user_maildomain]) | map('join') | list | join(',') }}"
-          when: fact_co_groups[_galaxy_admin_co_group] is defined
-
-        - name: Set no admins
-          ansible.builtin.set_fact:
-            _galaxy_admins: ""
-          when: fact_co_groups[_galaxy_admin_co_group] is not defined
-
-    - name: Load variables
-      ansible.builtin.include_vars: vars/galaxy_vars.yml
+    - name: Include config tasks
+      ansible.builtin.include_tasks: tasks/set_config.yml
 
     - name: Install Dependencies
       ansible.builtin.apt:
