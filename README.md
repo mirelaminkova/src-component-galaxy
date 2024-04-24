@@ -4,8 +4,8 @@ This repo provides the Ansible playbook for a [Galaxy](https://galaxyproject.org
 
 ### Roles used
 
-* The official Galaxy Ansible role
-* The official Galaxy postgres and postgres_objects role for database management
+* The official [Galaxy Ansible role](https://github.com/galaxyproject/ansible-galaxy)
+* The official [Galaxy postgres](https://github.com/galaxyproject/ansible-postgresql) and [postgres_objects](https://github.com/galaxyproject/ansible-postgresql-objects) roles for database management
 * Utility roles from the [UU SRC collection](https://github.com/UtrechtUniversity/researchcloud-items).
 * Assumes Nginx is already installed on the workspace (via the SURF Nginx component)
  
