@@ -3,7 +3,7 @@ galaxy_layout: custom
 _src_galaxy_root: /srv/galaxy
 galaxy_server_dir: "{{ _src_galaxy_root }}/server"
 galaxy_root: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
-galaxy_manage_systemd: true
+galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _src_galaxy_root }}/venv"
 galaxy_config_dir: "{{ _src_galaxy_root }}/config"
 galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_src_galaxy_root+'/datadir', true) }}" # component variable src_galaxy_storage_path
