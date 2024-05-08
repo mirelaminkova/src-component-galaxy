@@ -1,0 +1,9 @@
+# Internal variables that are not user configurable
+_molecule_idempotence: "{{ true if 'molecule-idempotence-notest' in ansible_skip_tags else false }}"
+_galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
+_galaxy_remote_user_maildomain: "src.surf-hosted.nl"
+_galaxy_custom_repo_clone_dest: /tmp/galaxy_load_on_deploy
+# if using a user-supplied git repo for installing tools, what subdirectory are the tools in?
+_galaxy_custom_repo_tool_location: 'tools' 
+# if using a user-supplied git repo for installing workflows, what subdirectory are the workflows in?
+_galaxy_custom_repo_workflow_location: 'workflows'

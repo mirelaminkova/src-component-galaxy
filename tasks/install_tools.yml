@@ -1,12 +1,12 @@
 ---
 - name: Get user defined tools and workflows from a custom git repo
   block:
-  when: src_galaxy_custom_repo | default('') | length > 0 # component variable src_galaxy_custom__repo
+  when: _galaxy_custom_repo | length > 0
 
   - name: Clone the git repo
     ansible.builtin.git:
-      repo: "{{ src_galaxy_custom_repo }}"
-      version: "{{ src_galaxy_custom_repo_branch | default('main', true) }}" # component variable src_galaxy_custom_repo_branch
+      repo: "{{ _galaxy_custom_repo }}"
+      version: "{{ _galaxy_custom_repo_branch }}"
       dest: "{{ _galaxy_custom_repo_clone_dest }}"
       depth: 1
       update: true

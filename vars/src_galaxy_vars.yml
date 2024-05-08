@@ -1,11 +1,11 @@
-# Variables relating to the component
-_molecule_idempotence: "{{ true if 'molecule-idempotence-notest' in ansible_skip_tags else false }}"
-_galaxy_bootstrap: "{{ src_galaxy_bootstrap | bool | default( _molecule_idempotence | ternary(false, true) ) }}" # component variable src_galaxy_bootstrap
-_galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
-_galaxy_remote_user_maildomain: "src.surf-hosted.nl"
-_galaxy_admin_co_group: "src_ws_admin"
-_galaxy_custom_repo_clone_dest: /tmp/galaxy_load_on_deploy
-_galaxy_custom_repo_tool_location: ['tools/*.yml', 'tool/*.yaml']
-_galaxy_custom_repo_workflow_location: ['workflows/*.ga']
-_galaxy_tool_files: "{{ src_galaxy_tool_files | split(',') | default([]) }}"  # component variable src_galaxy_tool_files
-_galaxy_workflow_files: "{{ src_galaxy_workflow_files | split(',') | default([]) }}"  # component variable src_galaxy_workflow_files
+# Variables derived from component parameters in ResearchCLoud
+_galaxy_bootstrap: "{{ src_galaxy_bootstrap | bool | default( _molecule_idempotence | ternary(false, true) ) }}"
+_galaxy_tool_files: "{{ src_galaxy_tool_files | split(',') | default([]) }}"
+_galaxy_workflow_files: "{{ src_galaxy_workflow_files | split(',') | default([]) }}"
+_galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_ws_admin', true) }}"
+_galaxy_custom_repo: "{{ src_galaxy_custom_repo | default('') }}"
+_galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', true) }}"
+
+# Note that some component parameters are also used in galaxy_vars.yml:
+# src_galaxy_storage_path
+# src_galaxy_version
