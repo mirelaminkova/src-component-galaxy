@@ -1,12 +1,20 @@
 # Internal variables that are not user configurable
+
+# Is this a molecule run?
 _molecule_active: "{{ true if 'molecule-notest' in ansible_skip_tags else false }}"
 _molecule_idempotence: "{{ true if 'molecule-idempotence-notest' in ansible_skip_tags else false }}"
+
+# Authorisation and authentication
 _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
 _galaxy_remote_user_maildomain: "src.surf-hosted.nl"
 _galaxy_custom_repo_clone_dest: /tmp/galaxy_load_on_deploy
+
 # if using a user-supplied git repo for installing tools, what subdirectory are the tools in?
 _galaxy_custom_repo_tool_location: 'tools' 
 # if using a user-supplied git repo for installing workflows, what subdirectory are the workflows in?
 _galaxy_custom_repo_workflow_location: 'workflows'
-_galaxy_gunicorn_socket_dir: "{{ _src_galaxy_root}}/run"
+
+# Paths to server dir
+_galaxy_root: /srv/galaxy
+_galaxy_gunicorn_socket_dir: "{{ _galaxy_root}}/run"
 _galaxy_gunicorn_socket_path: "{{ _galaxy_gunicorn_socket_dir }}/gunicorn.sock"
