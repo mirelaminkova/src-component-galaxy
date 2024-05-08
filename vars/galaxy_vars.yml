@@ -51,7 +51,7 @@ galaxy_config:
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
     job_config: "{{ galaxy_job_config }}"
-    bootstrap_admin_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
+    bootstrap_admin_api_key: "{{ _galaxy_bootstrap | ternary ( _galaxy_bootstrap_api_key, None ) | default(omit, true) }}"
   gravity:
     galaxy_root: "{{ galaxy_server_dir }}"
     galaxy_user: "{{ galaxy_user }}"
