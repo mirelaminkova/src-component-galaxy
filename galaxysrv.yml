@@ -21,7 +21,6 @@
         state: present
 
     - name: Set Galaxy socket upstream definition
-      tags: molecule-notest
       block:
 
       - name: Find Galaxy socket upstream definition
@@ -64,7 +63,6 @@
         name: www-data
         groups: "{{ galaxy_user }}"
         append: true
-      tags: molecule-notest
       notify: restart nginx
 
     - name: Get Galaxy service Status
@@ -95,7 +93,6 @@
   
   roles:
     - role: nginx-reverse_proxy
-      tags: molecule-notest
       vars:
         nginx_reverse_proxy_locations: "{{ galaxy_nginx_vhost_config }}"
   

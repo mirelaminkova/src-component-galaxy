@@ -2,7 +2,7 @@ galaxy_nginx_vhost_config:
   - name: galaxy
     location: /
     backend: http://galaxy
-    auth: sram
+    auth: "{{ _molecule_active | ternary(None, 'sram') | default(omit, true) }}"
   - name: static
     location: /static
     alias: "{{ galaxy_server_dir }}/static"

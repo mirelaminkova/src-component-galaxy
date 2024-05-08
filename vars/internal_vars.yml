@@ -1,4 +1,5 @@
 # Internal variables that are not user configurable
+_molecule_active: "{{ true if 'molecule-notest' in ansible_skip_tags else false }}"
 _molecule_idempotence: "{{ true if 'molecule-idempotence-notest' in ansible_skip_tags else false }}"
 _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
 _galaxy_remote_user_maildomain: "src.surf-hosted.nl"

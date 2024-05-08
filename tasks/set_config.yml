@@ -17,9 +17,12 @@
 
 - name: Load internal variables
   ansible.builtin.include_vars: vars/internal_vars.yml
-  
+
 - name: Load component variables
   ansible.builtin.include_vars: vars/src_galaxy_vars.yml
+
+- name: Load nginx variables
+  ansible.builtin.include_vars: vars/nginx_vars.yml
 
 - name: Load Galaxy role variables
   ansible.builtin.include_vars: vars/galaxy_vars.yml

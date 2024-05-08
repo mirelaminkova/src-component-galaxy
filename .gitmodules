@@ -1,0 +1,4 @@
+[submodule "plugin-nginx"]
+	path = plugin-nginx
+	url = https://gitlab.com/dometto/plugin-nginx.git
+	branch = molecule_compatibility
