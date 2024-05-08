@@ -1,7 +1,7 @@
 ---
 - name: Get user defined tools and workflows from a custom git repo
-  block:
   when: _galaxy_custom_repo | length > 0
+  block:
 
     - name: Clone the git repo
       ansible.builtin.git:
@@ -26,12 +26,12 @@
       register: _galaxy_custom_repo_workflow_files
 
 - name: Install tools and workflows
-  include_role:
-    role: galaxyproject.galaxy-tools
+  ansible.builtin.include_role:
+    name: galaxyproject.galaxy-tools
   vars:
     galaxy_tools_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
     galaxy_tools_install_tools: true
     galaxy_tools_install_workflows: true
     galaxy_tools_galaxy_instance_url: "{{ galaxy_config.gravity.gunicorn.bind }}"
     galaxy_tools_tool_list_files: "{{ _galaxy_tool_files + (_galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([])) }}"
-    galaxy_tools_workflows:  "{{ _galaxy_workflow_files + (_galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([])) }}"
+    galaxy_tools_workflows: "{{ _galaxy_workflow_files + (_galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([])) }}"
