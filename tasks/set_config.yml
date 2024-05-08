@@ -15,5 +15,8 @@
         _galaxy_admins: ""
       when: fact_co_groups[_galaxy_admin_co_group] is not defined
 
-- name: Load variables
+- name: Load component variables
+  ansible.builtin.include_vars: vars/src_galaxy_vars.yml
+
+- name: Load Galaxy role variables
   ansible.builtin.include_vars: vars/galaxy_vars.yml
