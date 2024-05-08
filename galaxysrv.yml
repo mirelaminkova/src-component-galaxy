@@ -77,12 +77,37 @@
       command: "/usr/local/bin/galaxyctl start"
       when: "galaxy_status.status.ActiveState == 'inactive'"
 
+    - name: Install custom tools and workflows
+      when: _galaxy_bootstrap
+      block:
+
+      - name: Wait for galaxy server to come up
+        ansible.builtin.uri:
+          url: "http://localhost/api/version"
+          unix_socket: "{{ galaxy_config.gravity.gunicorn.bind }}"
+        register: galaxy_service_live
+        until: "galaxy_service_live is not failed"
+        retries: 60
+        delay: 10 # check every 10 seconds for a maximum of 10 minutes
+
+      - name: Include tasks to install custom tools and workflows
+        ansible.builtin.include_tasks: tasks/install_tools.yml
+  
   roles:
     - role: nginx-reverse_proxy
       tags: molecule-notest
       vars:
         nginx_reverse_proxy_locations: "{{ galaxy_nginx_vhost_config }}"
   
+  post_tasks:
+
+    - name: Remove bootstrap API key
+      when: _galaxy_bootstrap
+      ansible.builtin.lineinfile:
+        path: "{{ galaxy_config_dir }}/galaxy.yml"
+        regexp: '.*bootstrap_admin_api_key:'
+        state: absent
+
   handlers:
 
     - name: Restart nginx
