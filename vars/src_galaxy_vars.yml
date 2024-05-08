@@ -1,6 +1,6 @@
 # Variables relating to the component
 _molecule_idempotence: "{{ true if 'molecule-idempotence-notest' in ansible_skip_tags else false }}"
-_galaxy_bootstrap: "{{ src_galaxy_bootstrap | bool | default( _molecule_idempotence | ternary(false, true) ) }}"
+_galaxy_bootstrap: "{{ src_galaxy_bootstrap | bool | default( _molecule_idempotence | ternary(false, true) ) }}" # component variable src_galaxy_bootstrap
 _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
 _galaxy_remote_user_maildomain: "src.surf-hosted.nl"
 _galaxy_admin_co_group: "src_ws_admin"
