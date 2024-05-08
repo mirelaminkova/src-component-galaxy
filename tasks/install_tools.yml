@@ -3,27 +3,27 @@
   block:
   when: _galaxy_custom_repo | length > 0
 
-  - name: Clone the git repo
-    ansible.builtin.git:
-      repo: "{{ _galaxy_custom_repo }}"
-      version: "{{ _galaxy_custom_repo_branch }}"
-      dest: "{{ _galaxy_custom_repo_clone_dest }}"
-      depth: 1
-      update: true
+    - name: Clone the git repo
+      ansible.builtin.git:
+        repo: "{{ _galaxy_custom_repo }}"
+        version: "{{ _galaxy_custom_repo_branch }}"
+        dest: "{{ _galaxy_custom_repo_clone_dest }}"
+        depth: 1
+        update: true
 
-  - name: Find all tool in repo
-    ansible.builtin.find:
-      paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_tool_location }}"
-      file_type: file
-      patterns: ['*.yml', '*.yaml']
-    register: _galaxy_custom_repo_tool_files
+    - name: Find all tool in repo
+      ansible.builtin.find:
+        paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_tool_location }}"
+        file_type: file
+        patterns: ['*.yml', '*.yaml']
+      register: _galaxy_custom_repo_tool_files
 
-  - name: Find all workflows in repo
-    ansible.builtin.find:
-      paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_workflow_location }}"
-      file_type: file
-      patterns: ['*.yml', '*.yaml']
-    register: _galaxy_custom_repo_workflow_files
+    - name: Find all workflows in repo
+      ansible.builtin.find:
+        paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_workflow_location }}"
+        file_type: file
+        patterns: ['*.yml', '*.yaml']
+      register: _galaxy_custom_repo_workflow_files
 
 - name: Install tools and workflows
   include_role:
