@@ -84,9 +84,9 @@
       - name: Wait for galaxy server to come up
         ansible.builtin.uri:
           url: "http://localhost/api/version"
-          unix_socket: "{{ galaxy_config.gravity.gunicorn.bind }}"
+          unix_socket: "{{ _galaxy_gunicorn_socket_path }}"
         register: galaxy_service_live
-        until: "galaxy_service_live is not failed"
+        until: "galaxy_service_live.status == 200"
         retries: 60
         delay: 10 # check every 10 seconds for a maximum of 10 minutes
 
@@ -101,12 +101,13 @@
   
   post_tasks:
 
-    - name: Remove bootstrap API key
-      when: _galaxy_bootstrap
-      ansible.builtin.lineinfile:
-        path: "{{ galaxy_config_dir }}/galaxy.yml"
-        regexp: '.*bootstrap_admin_api_key:'
-        state: absent
+    # - name: Remove bootstrap API key
+    #   when: _galaxy_bootstrap
+    #   ansible.builtin.lineinfile:
+    #     path: "{{ galaxy_config_dir }}/galaxy.yml"
+    #     regexp: '.*bootstrap_admin_api_key:'
+    #     state: absent
+    #   notify: galaxy gravity restart
 
   handlers:
 

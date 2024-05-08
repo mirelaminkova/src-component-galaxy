@@ -7,3 +7,5 @@ _galaxy_custom_repo_clone_dest: /tmp/galaxy_load_on_deploy
 _galaxy_custom_repo_tool_location: 'tools' 
 # if using a user-supplied git repo for installing workflows, what subdirectory are the workflows in?
 _galaxy_custom_repo_workflow_location: 'workflows'
+_galaxy_gunicorn_socket_dir: "{{ _src_galaxy_root}}/run"
+_galaxy_gunicorn_socket_path: "{{ _galaxy_gunicorn_socket_dir }}/gunicorn.sock"
