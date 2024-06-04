@@ -5,6 +5,7 @@ galaxy_nginx_vhost_config:
     auth: "{{ _molecule_active | ternary(None, 'sram') | default(omit, true) }}"
   - name: api
     location: /api
+    backend: http://galaxy
     auth: "{{ _galaxy_api_exposed | ternary(None, 'sram') | default(omit, true) }}"
   - name: static
     location: /static
