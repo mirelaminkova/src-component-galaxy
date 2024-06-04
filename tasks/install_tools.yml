@@ -37,7 +37,7 @@
   ansible.builtin.include_role:
     name: galaxyproject.galaxy-tools
   vars:
-    galaxy_tools_base_dir: "{{ galaxy_root }}"
+    galaxy_tools_base_dir: "/home/{{ galaxy_user }}"
     galaxy_tools_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
     galaxy_tools_install_tools: true
     galaxy_tools_install_workflows: true
