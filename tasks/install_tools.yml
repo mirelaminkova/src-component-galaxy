@@ -41,6 +41,6 @@
     galaxy_tools_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
     galaxy_tools_install_tools: true
     galaxy_tools_install_workflows: true
-    galaxy_tools_galaxy_instance_url: "{{ galaxy_config.gravity.gunicorn.bind }}"
+    galaxy_tools_galaxy_instance_url: "{{ _galaxy_nginx_hostname }}"
     galaxy_tools_tool_list_files: "{{ _galaxy_tool_files + (_galaxy_custom_tool_files | default([])) }}"
     galaxy_tools_workflows: "{{ _galaxy_workflow_files + (_galaxy_custom_workflow_files | default([])) }}"

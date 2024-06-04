@@ -3,6 +3,12 @@
   ansible.builtin.include_role: {name: fact_workspace_info }
   tags: molecule-notest
 
+- name: Load internal variables
+  ansible.builtin.include_vars: vars/internal_vars.yml
+
+- name: Load component variables
+  ansible.builtin.include_vars: vars/src_galaxy_vars.yml
+
 - name: Set admins
   block:
     - name: Set admins from CO group
@@ -15,14 +21,16 @@
         _galaxy_admins: ""
       when: fact_co_groups[_galaxy_admin_co_group] is not defined
 
-- name: Load internal variables
-  ansible.builtin.include_vars: vars/internal_vars.yml
-
-- name: Load component variables
-  ansible.builtin.include_vars: vars/src_galaxy_vars.yml
-
 - name: Load nginx variables
   ansible.builtin.include_vars: vars/nginx_vars.yml
 
 - name: Load Galaxy role variables
   ansible.builtin.include_vars: vars/galaxy_vars.yml
+
+- name: Get hostname
+  ansible.builtin.command: hostname
+  register: _galaxy_hostname_result
+
+- name: Set nginx URL
+  ansible.builtin.set_fact:
+    _galaxy_server_url: "{{  _molecule_active | ternary('http://localhost', 'https://' ~ _galaxy_hostname_result.stdout) }}"
