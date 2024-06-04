@@ -1,6 +1,11 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    src_galaxy_tool_files:
+      - ../_testfiles/tool_list.yaml.sample
+    src_galaxy_workflow_files:
+      - ../_testfiles/sample-workflow.ga
   gather_facts: false
 
 - name: Run playbook as test
