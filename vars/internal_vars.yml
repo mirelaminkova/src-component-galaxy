@@ -5,7 +5,6 @@ _molecule_active: "{{ true if 'molecule-notest' in ansible_skip_tags else false 
 _molecule_idempotence: "{{ true if 'molecule-idempotence-notest' in ansible_skip_tags else false }}"
 
 # Authorisation and authentication
-_galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=15) }}"
 _galaxy_remote_user_maildomain: "src.surf-hosted.nl"
 _galaxy_custom_repo_clone_dest: /tmp/galaxy_load_on_deploy
 
