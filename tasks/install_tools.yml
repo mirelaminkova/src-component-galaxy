@@ -38,9 +38,11 @@
     name: galaxyproject.galaxy-tools
   vars:
     galaxy_tools_base_dir: "/home/{{ galaxy_user }}"
-    galaxy_tools_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
+    galaxy_tools_tool_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
+    galaxy_tools_workflow_api_key: "{{ _galaxy_create_bootstrap_user.stdout }}" # for workflows we cannot use the general bootstrap api key, but must use a specific user's key
     galaxy_tools_install_tools: true
     galaxy_tools_install_workflows: true
+    galaxy_tools_galaxy_publish_workflows: true
     galaxy_tools_galaxy_instance_url: "{{ _galaxy_server_url }}"
     galaxy_tools_tool_list_files: "{{ _galaxy_tool_files + (_galaxy_custom_tool_files | default([])) }}"
     galaxy_tools_workflows: "{{ _galaxy_workflow_files + (_galaxy_custom_workflow_files | default([])) }}"

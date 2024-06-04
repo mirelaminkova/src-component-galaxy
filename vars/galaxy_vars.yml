@@ -44,6 +44,8 @@ galaxy_job_config:
 galaxy_config:
   galaxy:
     use_remote_user: true
+    allow_user_creation: true
+    allow_user_deletion: true
     admin_users: "{{ _galaxy_admins }}"
     remote_user_maildomain: "{{ _galaxy_remote_user_maildomain }}"
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"

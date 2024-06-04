@@ -1,0 +1,30 @@
+---
+- name: Wait for galaxy server to come up
+  ansible.builtin.uri:
+    url: "http://localhost/api/version"
+    unix_socket: "{{ _galaxy_gunicorn_socket_path }}"
+  register: galaxy_service_live
+  until: "galaxy_service_live.status == 200"
+  retries: 60
+  delay: 10 # check every 10 seconds for a maximum of 10 minutes
+
+- name: Copy the user management script
+  ansible.builtin.copy:
+    src: manage_bootstrap_user.py
+    dest: "/home/{{ galaxy_user }}"
+    owner: "{{ galaxy_user }}"
+    group: "{{ galaxy_user }}"
+    mode: "750"
+
+- name: Create bootstrap user and api key
+  ansible.builtin.command:
+    cmd: "/home/{{ galaxy_user }}/manage_boostrap_user.py -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g {{ _galaxy_server_url }} -e admin@galaxy"
+    register: _galaxy_create_bootstrap_user
+
+- name: Include tasks to install custom tools and workflows
+  ansible.builtin.include_tasks: tasks/install_tools.yml
+
+- name: Deactivate the bootstrapped admin user
+  ansible.builtin.command:
+    cmd: "/home/{{ galaxy_user }}/manage_boostrap_user.py -d -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g {{ _galaxy_server_url }} -e admin@galaxy"
+    mode: "750"

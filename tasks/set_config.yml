@@ -24,7 +24,7 @@
 - name: Generate a bootstrap key
   when: _galaxy_bootstrap
   ansible.builtin.set_fact:
-    _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=30) }}"
+    _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=50) }}"
 
 - name: Load nginx variables
   ansible.builtin.include_vars: vars/nginx_vars.yml

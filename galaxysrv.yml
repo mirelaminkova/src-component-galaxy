@@ -75,21 +75,9 @@
       command: "/usr/local/bin/galaxyctl graceful"
       when: "galaxy_status.status.ActiveState == 'inactive' or _galaxy_bootstrap"
 
-    - name: Install custom tools and workflows
+    - name: Include tasks to bootstrap the instance
       when: _galaxy_bootstrap
-      block:
-
-      - name: Wait for galaxy server to come up
-        ansible.builtin.uri:
-          url: "http://localhost/api/version"
-          unix_socket: "{{ _galaxy_gunicorn_socket_path }}"
-        register: galaxy_service_live
-        until: "galaxy_service_live.status == 200"
-        retries: 60
-        delay: 10 # check every 10 seconds for a maximum of 10 minutes
-
-      - name: Include tasks to install custom tools and workflows
-        ansible.builtin.include_tasks: tasks/install_tools.yml
+      ansible.builtin.include_tasks: tasks/bootstrap.yml
   
   roles:
     - role: nginx-reverse_proxy
