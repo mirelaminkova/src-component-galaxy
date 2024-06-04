@@ -1,5 +1,5 @@
 # Variables derived from component parameters in ResearchCLoud
-_galaxy_bootstrap: "{{ src_galaxy_bootstrap | default( _molecule_idempotence | ternary(false, true) ) | bool }}"
+_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool ) }}"
 _galaxy_tool_files: "{{ src_galaxy_tool_files | default('') | split(',') }}"
 _galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',') }}"
 _galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_ws_admin', true) }}"
