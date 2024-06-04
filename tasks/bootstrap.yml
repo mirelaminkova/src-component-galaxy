@@ -19,7 +19,7 @@
 - name: Create bootstrap user and api key
   ansible.builtin.command:
     cmd: "/home/{{ galaxy_user }}/manage_boostrap_user.py -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g {{ _galaxy_server_url }} -e admin@galaxy"
-    register: _galaxy_create_bootstrap_user
+  register: _galaxy_create_bootstrap_user
 
 - name: Include tasks to install custom tools and workflows
   ansible.builtin.include_tasks: tasks/install_tools.yml
