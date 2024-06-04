@@ -25,7 +25,7 @@
 
       - name: Find Galaxy socket upstream definition
         ansible.builtin.lineinfile:
-          path: /etc/nginx/conf.d/ssl_main.conf
+          path: "{{ _galaxy_nginx_conf }}"
           state: absent
           line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
         check_mode: true
@@ -34,7 +34,7 @@
 
       - name: Add Galaxy socket upstream definition
         ansible.builtin.lineinfile:
-          path: /etc/nginx/conf.d/ssl_main.conf
+          path: "{{ _galaxy_nginx_conf }}"
           insertafter: EOF
           line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
         when: detect_nginx_upstream.found == 0

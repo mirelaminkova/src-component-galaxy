@@ -18,3 +18,5 @@ _galaxy_custom_repo_workflow_location: 'workflows'
 _galaxy_root: /srv/galaxy
 _galaxy_gunicorn_socket_dir: "{{ _galaxy_root}}/run"
 _galaxy_gunicorn_socket_path: "{{ _galaxy_gunicorn_socket_dir }}/gunicorn.sock"
+
+_galaxy_nginx_conf: /etc/nginx/conf.d/ssl_main.conf
