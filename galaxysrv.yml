@@ -98,13 +98,13 @@
   
   post_tasks:
 
-    # - name: Remove bootstrap API key
-    #   when: _galaxy_bootstrap
-    #   ansible.builtin.lineinfile:
-    #     path: "{{ galaxy_config_dir }}/galaxy.yml"
-    #     regexp: '.*bootstrap_admin_api_key:'
-    #     state: absent
-    #   notify: galaxy gravity restart
+    - name: Remove bootstrap API key
+      when: _galaxy_bootstrap
+      ansible.builtin.lineinfile:
+        path: "{{ galaxy_config_dir }}/galaxy.yml"
+        regexp: '.*bootstrap_admin_api_key:'
+        state: absent
+      notify: galaxy gravity restart
 
   handlers:
 
