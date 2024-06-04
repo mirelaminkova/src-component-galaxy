@@ -31,6 +31,6 @@
   ansible.builtin.command: hostname
   register: _galaxy_hostname_result
 
-- name: Set nginx URL
+- name: Set server URL
   ansible.builtin.set_fact:
     _galaxy_server_url: "{{  _molecule_active | ternary('http://localhost', 'https://' ~ _galaxy_hostname_result.stdout) }}"
