@@ -18,12 +18,20 @@
         patterns: ['*.yml', '*.yaml']
       register: _galaxy_custom_repo_tool_files
 
+    - name: Set custom tool files array
+      set_fact:
+        _galaxy_custom_tool_files: "{{ _galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([]) }}"
+
     - name: Find all workflows in repo
       ansible.builtin.find:
         paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_workflow_location }}"
         file_type: file
         patterns: ['*.ga']
       register: _galaxy_custom_repo_workflow_files
+
+    - name: Set custom workflow files array
+      set_fact:
+        _galaxy_custom_workflow_files: "{{ _galaxy_custom_repo_workflow_files['files'] | map(attribute='path') | list | default([]) }}"
 
 - name: Install tools and workflows
   ansible.builtin.include_role:
@@ -34,5 +42,5 @@
     galaxy_tools_install_tools: true
     galaxy_tools_install_workflows: true
     galaxy_tools_galaxy_instance_url: "{{ galaxy_config.gravity.gunicorn.bind }}"
-    galaxy_tools_tool_list_files: "{{ _galaxy_tool_files + (_galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([])) }}"
-    galaxy_tools_workflows: "{{ _galaxy_workflow_files + (_galaxy_custom_repo_worklow_files['files'] | | map(attribute='path') | list | default([])) }}"
+    galaxy_tools_tool_list_files: "{{ _galaxy_tool_files + (_galaxy_custom_tool_files | default([])) }}"
+    galaxy_tools_workflows: "{{ _galaxy_workflow_files + (_galaxy_custom_workflow_files | default([])) }}"
