@@ -1,7 +1,7 @@
 ---
 - name: Wait for galaxy server to come up
   ansible.builtin.uri:
-    url: "http://localhost/api/version"
+    url: "{{ _galaxy_server_url }}/api/version"
     unix_socket: "{{ _galaxy_gunicorn_socket_path }}"
   register: galaxy_service_live
   until: "galaxy_service_live.status == 200"
