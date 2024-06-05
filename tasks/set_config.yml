@@ -23,7 +23,7 @@
 
 - name: Determine whether to bootstrap Galaxy
   set_fact:
-    _galaxy_do_bootstrap: _galaxy_bootstrap and (_galaxy_tool_files + _galaxy_workflow_files | length > 0 or _galaxy_custom_repo | length > 0)
+    _galaxy_do_bootstrap:  "{{ _galaxy_bootstrap and _galaxy_tool_files | length + _galaxy_workflow_files | length + _galaxy_custom_repo | length  > 0}}"
 
 - name: Generate a bootstrap key
   when: _galaxy_do_bootstrap
