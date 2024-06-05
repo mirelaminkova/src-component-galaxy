@@ -13,10 +13,14 @@ platforms:
     image: ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_jammy
     <<: *image_settings
     command: /sbin/init
-    platform: linux/amd64
-    publish:
-      - "8080:8080"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    published_ports:
+      - 8080/tcp
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      remote_tmp: /tmp
   env:
     variable_host: all
