@@ -3,7 +3,7 @@
   ansible.builtin.lineinfile:
     path: "{{ _galaxy_nginx_conf }}"
     state: absent
-    line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
+    line: "{{ _galaxy_api_localhost_definition }}"
   check_mode: true
   changed_when: false
   register: galaxy_detect_api_localhost
@@ -12,7 +12,7 @@
   ansible.builtin.lineinfile:
     path: "{{ _galaxy_nginx_conf }}"
     insertafter: EOF
-    line: "server { listen localhost:80; include /etc/nginx/app-location-conf.d/api.conf;}"
+    line: "{{ _galaxy_api_localhost_definition }}"
   when: galaxy_detect_api_localhost.found == 0
   register: galaxy_add_api_localhost
 
@@ -40,7 +40,7 @@
 
 - name: Create bootstrap user and api key
   ansible.builtin.command:
-    cmd: "{{ galaxy_venv_dir }}/bin/python3 /home/{{ galaxy_user }}/manage_bootstrap_user.py -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g {{ _galaxy_server_url }} -e admin@galaxy"
+    cmd: "{{ galaxy_venv_dir }}/bin/python3 /home/{{ galaxy_user }}/manage_bootstrap_user.py -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g http://localhost -e admin@galaxy"
   register: _galaxy_create_bootstrap_user
 
 - name: Include tasks to install custom tools and workflows
@@ -48,4 +48,4 @@
 
 - name: Deactivate the bootstrapped admin user
   ansible.builtin.command:
-    cmd: "{{ galaxy_venv_dir }}/bin/python3 /home/{{ galaxy_user }}/manage_bootstrap_user.py -d -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g {{ _galaxy_server_url }} -e admin@galaxy"
+    cmd: "{{ galaxy_venv_dir }}/bin/python3 /home/{{ galaxy_user }}/manage_bootstrap_user.py -d -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g http://localhost -e admin@galaxy"

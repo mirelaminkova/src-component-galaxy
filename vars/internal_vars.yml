@@ -19,3 +19,4 @@ _galaxy_gunicorn_socket_dir: "{{ _galaxy_root}}/run"
 _galaxy_gunicorn_socket_path: "{{ _galaxy_gunicorn_socket_dir }}/gunicorn.sock"
 
 _galaxy_nginx_conf: /etc/nginx/conf.d/ssl_main.conf
+_galaxy_api_localhost_definition: "server { listen localhost:80; include /etc/nginx/app-location-conf.d/api.conf;}"
