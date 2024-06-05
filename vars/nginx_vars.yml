@@ -6,7 +6,7 @@ galaxy_nginx_vhost_config:
   - name: api
     location: /api
     backend: http://galaxy
-    auth: "{{ _galaxy_api_exposed | ternary(None, 'sram') | default(omit, true) }}"
+    auth: "{{ _galaxy_api_exposed | ternary('noauth', 'sram') | default(omit, true) }}"
   - name: static
     location: /static
     alias: "{{ galaxy_server_dir }}/static"
