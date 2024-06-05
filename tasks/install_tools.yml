@@ -45,5 +45,5 @@
     galaxy_tools_galaxy_publish_workflows: true
     galaxy_tools_ignore_errors: false
     galaxy_tools_galaxy_instance_url: "{{ _galaxy_server_url }}"
-    galaxy_tools_tool_list_files: "{{ _galaxy_tool_files + (_galaxy_custom_tool_files | default([])) }}"
-    galaxy_tools_workflows: "{{ _galaxy_workflow_files + (_galaxy_custom_workflow_files | default([])) }}"
+    galaxy_tools_tool_list_files: "{{ (_galaxy_tool_files | default([])) + (_galaxy_custom_tool_files | default([])) }}"
+    galaxy_tools_workflows: "{{ (_galaxy_workflow_files | default([])) + (_galaxy_custom_workflow_files | default([])) }}"
