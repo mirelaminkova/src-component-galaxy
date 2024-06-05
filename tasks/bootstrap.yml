@@ -1,8 +1,30 @@
 ---
+- name: Find Galaxy API localhost server definition
+  ansible.builtin.lineinfile:
+    path: "{{ _galaxy_nginx_conf }}"
+    state: absent
+    line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
+  check_mode: true
+  changed_when: false
+  register: galaxy_detect_api_localhost
+
+- name: Find Galaxy API localhost server definition
+  ansible.builtin.lineinfile:
+    path: "{{ _galaxy_nginx_conf }}"
+    insertafter: EOF
+    line: "server { listen localhost:80; include /etc/nginx/app-location-conf.d/api.conf;}"
+  when: galaxy_detect_api_localhost.found == 0
+  register: galaxy_add_api_localhost
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+  when: galaxy_add_api_localhost.changed
+
 - name: Wait for galaxy server to come up
   ansible.builtin.uri:
-    url: "{{ _galaxy_server_scheme }}localhost/api/version"
-    validate_certs: false
+    url: "http://localhost/api/version"
   register: galaxy_service_live
   until: "galaxy_service_live.status == 200"
   retries: 30
