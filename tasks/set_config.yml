@@ -21,8 +21,12 @@
         _galaxy_admins: ""
       when: fact_co_groups[_galaxy_admin_co_group] is not defined
 
+- name: Determine whether to bootstrap Galaxy
+  set_fact:
+    _galaxy_do_bootstrap: _galaxy_bootstrap and (_galaxy_tool_files + _galaxy_workflow_files | length > 0 or _galaxy_custom_repo | length > 0)
+
 - name: Generate a bootstrap key
-  when: _galaxy_bootstrap
+  when: _galaxy_do_bootstrap
   ansible.builtin.set_fact:
     _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=50) }}"
 

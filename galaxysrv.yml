@@ -73,10 +73,10 @@
 
     - name: Galaxy gravity graceful
       command: "/usr/local/bin/galaxyctl graceful"
-      when: "galaxy_status.status.ActiveState == 'inactive' or _galaxy_bootstrap"
+      when: "galaxy_status.status.ActiveState == 'inactive' or _galaxy_do_bootstrap"
 
     - name: Include tasks to bootstrap the instance
-      when: _galaxy_bootstrap
+      when: _galaxy_do_bootstrap 
       ansible.builtin.include_tasks: tasks/bootstrap.yml
   
   roles:
@@ -87,7 +87,7 @@
   post_tasks:
 
     - name: Remove bootstrap API key
-      when: _galaxy_bootstrap
+      when: _galaxy_do_bootstrap
       ansible.builtin.lineinfile:
         path: "{{ galaxy_config_dir }}/galaxy.yml"
         regexp: '.*bootstrap_admin_api_key:'

@@ -8,7 +8,7 @@
   changed_when: false
   register: galaxy_detect_api_localhost
 
-- name: Find Galaxy API localhost server definition
+- name: Define Galaxy API localhost server definition
   ansible.builtin.lineinfile:
     path: "{{ _galaxy_nginx_conf }}"
     insertafter: EOF
