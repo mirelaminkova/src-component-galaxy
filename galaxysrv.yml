@@ -20,25 +20,6 @@
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
-    - name: Set Galaxy socket upstream definition
-      block:
-
-      - name: Find Galaxy socket upstream definition
-        ansible.builtin.lineinfile:
-          path: "{{ _galaxy_nginx_conf }}"
-          state: absent
-          line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
-        check_mode: true
-        changed_when: false
-        register: detect_nginx_upstream
-
-      - name: Add Galaxy socket upstream definition
-        ansible.builtin.lineinfile:
-          path: "{{ _galaxy_nginx_conf }}"
-          insertafter: EOF
-          line: "upstream galaxy { server {{ galaxy_config.gravity.gunicorn.bind }}; }"
-        when: detect_nginx_upstream.found == 0
-
   tasks:
 
     - name: Workaround to install requirements.yml on SURF ResearchCloud

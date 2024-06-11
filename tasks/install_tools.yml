@@ -44,6 +44,6 @@
     galaxy_tools_install_workflows: true
     galaxy_tools_galaxy_publish_workflows: true
     galaxy_tools_ignore_errors: false
-    galaxy_tools_galaxy_instance_url: "http://localhost"
+    galaxy_tools_galaxy_instance_url: "http://{{ _galaxy_local_address }}"
     galaxy_tools_tool_list_files: "{{ (_galaxy_tool_files | default([])) + (_galaxy_custom_tool_files | default([])) }}"
     galaxy_tools_workflows: "{{ (_galaxy_workflow_files | default([])) + (_galaxy_custom_workflow_files | default([])) }}"

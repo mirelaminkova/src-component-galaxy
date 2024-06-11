@@ -23,8 +23,6 @@ postgresql_objects_users:
 postgresql_objects_databases:
   - name: galaxy
     owner: galaxy
-galaxy_extra_dirs:
-  - "{{ _galaxy_gunicorn_socket_dir }}"
 galaxy_job_config:
   runners:
     local_runner:
@@ -59,7 +57,7 @@ galaxy_config:
     process_manager: systemd
     gunicorn:
       # listening options
-      bind: "unix:{{ _galaxy_gunicorn_socket_path }}"
+      bind: "{{ _galaxy_local_address }}"
       # performance options
       workers: 2
       # Other options that will be passed to gunicorn
