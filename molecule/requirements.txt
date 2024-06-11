@@ -1,0 +1,5 @@
+molecule
+molecule-plugins
+jmespath~=1.0
+requests~=2.31.0 # https://github.com/ansible-community/molecule-plugins/issues/256
+podman~=4.0

@@ -1,11 +1,11 @@
 galaxy_nginx_vhost_config:
   - name: galaxy
     location: /
-    backend: http://galaxy
+    backend: "http://{{ _galaxy_local_address }}"
     auth: "{{ _molecule_active | ternary(None, 'sram') | default(omit, true) }}"
   - name: api
     location: /api
-    backend: http://galaxy
+    backend: "http://{{ _galaxy_local_address }}/api"
     auth: "{{ _galaxy_api_exposed | ternary('noauth', 'sram') | default(omit, true) }}"
   - name: static
     location: /static

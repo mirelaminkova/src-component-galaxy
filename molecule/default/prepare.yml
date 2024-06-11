@@ -18,7 +18,7 @@
   vars:
     rsc_nginx_authorization_endpoint: http://localhost
     rsc_nginx_user_info_endpoint: http://localhost
-    rsc_nginx_service_url: http://localhost
+    rsc_nginx_service_url: localhost
     nginx_enable_ssl: false
     nginx_enable_auth: true
     rsc_nginx_oauth2_application:
