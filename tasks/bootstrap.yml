@@ -7,22 +7,60 @@
   retries: 30
   delay: 10 # check every 10 seconds for a maximum of 5 minutes
 
-- name: Copy the user management script
-  ansible.builtin.copy:
-    src: manage_bootstrap_user.py
-    dest: "/home/{{ galaxy_user }}"
-    owner: "{{ galaxy_user }}"
-    group: "{{ galaxy_user }}"
-    mode: "750"
+- name: Get user defined tools and workflows from a custom git repo
+  when: _galaxy_custom_repo | length > 0
+  block:
 
-- name: Create bootstrap user and api key
-  ansible.builtin.command:
-    cmd: "{{ galaxy_venv_dir }}/bin/python3 /home/{{ galaxy_user }}/manage_bootstrap_user.py -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g http://localhost -e admin@galaxy"
-  register: _galaxy_create_bootstrap_user
+    - name: Clone the git repo
+      ansible.builtin.git:
+        repo: "{{ _galaxy_custom_repo }}"
+        version: "{{ _galaxy_custom_repo_branch }}"
+        dest: "{{ _galaxy_custom_repo_clone_dest }}"
+        depth: 1
+        update: true
 
-- name: Include tasks to install custom tools and workflows
-  ansible.builtin.include_tasks: tasks/install_tools.yml
+    - name: Find all tools in repo
+      ansible.builtin.find:
+        paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_tool_location }}"
+        file_type: file
+        patterns: ['*.yml', '*.yaml']
+      register: _galaxy_custom_repo_tool_files
 
-- name: Deactivate the bootstrapped admin user
-  ansible.builtin.command:
-    cmd: "{{ galaxy_venv_dir }}/bin/python3 /home/{{ galaxy_user }}/manage_bootstrap_user.py -d -a {{ galaxy_config.galaxy.bootstrap_admin_api_key }} -g http://localhost -e admin@galaxy"
+    - name: Set custom tool files array
+      set_fact:
+        _galaxy_custom_tool_files: "{{ _galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([]) }}"
+
+    - name: Find all workflows in repo
+      ansible.builtin.find:
+        paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_workflow_location }}"
+        file_type: file
+        patterns: ['*.ga']
+      register: _galaxy_custom_repo_workflow_files
+
+    - name: Set custom workflow files array
+      set_fact:
+        _galaxy_custom_workflow_files: "{{ _galaxy_custom_repo_workflow_files['files'] | map(attribute='path') | list | default([]) }}"
+
+- name: Install tools and workflows
+  ansible.builtin.include_role:
+    name: galaxyproject.galaxy-tools
+  vars:
+    galaxy_tools_base_dir: "/home/{{ galaxy_user }}"
+    galaxy_tools_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
+    galaxy_tools_create_bootstrap_user: true
+    galaxy_tools_delete_bootstrap_user: true
+    galaxy_tools_install_tools: true
+    galaxy_tools_install_workflows: true
+    galaxy_tools_galaxy_publish_workflows: true
+    galaxy_tools_ignore_errors: false
+    galaxy_tools_galaxy_instance_url: "http://{{ _galaxy_local_address }}"
+    galaxy_tools_tool_list_files: "{{ (_galaxy_tool_files | default([])) + (_galaxy_custom_tool_files | default([])) }}"
+    galaxy_tools_workflows: "{{ (_galaxy_workflow_files | default([])) + (_galaxy_custom_workflow_files | default([])) }}"
+
+- name: Remove bootstrap API key from Galaxy config
+  when: _galaxy_bootstrap_api_key is defined
+  ansible.builtin.lineinfile:
+    path: "{{ galaxy_config_dir }}/galaxy.yml"
+    regexp: '.*bootstrap_admin_api_key:'
+    state: absent
+  notify: galaxy gravity restart

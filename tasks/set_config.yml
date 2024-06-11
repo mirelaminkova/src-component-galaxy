@@ -35,3 +35,13 @@
 
 - name: Load Galaxy role variables
   ansible.builtin.include_vars: vars/galaxy_vars.yml
+
+# Dump galaxy_config in a new variable.
+# Needed because galaxyproject.galaxy parses the galaxy['galaxy_config'] dict in a special way:
+# it uses a plugin designed to mimic uwsgi's non-stanadard yaml implementation.
+# The result is that "omit" placeholders are treated as strings.
+# So we cannot pass galaxy_config to the role directly, and must instead save and 'resolve' the omissions here.
+# _galaxy_config is then passed to the role in galaxysrv.yml
+- name: Save _galaxy_config
+  ansible.builtin.set_fact:
+    _galaxy_config: "{{ galaxy_config }}"
