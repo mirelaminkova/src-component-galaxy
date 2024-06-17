@@ -1,6 +1,6 @@
 ---
 - name: Gather CO info facts
-  ansible.builtin.include_role: {name: fact_workspace_info }
+  ansible.builtin.include_role: {name: fact_regular_users }
   tags: molecule-notest
 
 - name: Load internal variables
