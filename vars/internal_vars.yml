@@ -19,3 +19,5 @@ _galaxy_root: /srv/galaxy
 _galaxy_nginx_conf: /etc/nginx/conf.d/ssl_main.conf
 _galaxy_api_localhost_definition: "server { listen localhost:80; include /etc/nginx/app-location-conf.d/api.conf;}"
 _galaxy_local_address: localhost:8080
+
+galaxy_src_documentation: https://github.com/UtrechtUniversity/vre-docs

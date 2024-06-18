@@ -43,11 +43,19 @@
         galaxy_config: "{{ _galaxy_config }}"
 
     - name: Add nginx user to galaxy group
-      user:
+      ansible.builtin.user:
         name: www-data
         groups: "{{ galaxy_user }}"
         append: true
       notify: restart nginx
+
+    - name: Create welcome page
+      ansible.builtin.template:
+        src: welcome.html.j2
+        dest: "{{ galaxy_server_dir }}/static/welcome.html"
+        owner: "{{ galaxy_privsep_user }}"
+        group: "{{ galaxy_user }}"
+        mode: "644"
 
     - name: Populate service facts
       ansible.builtin.service_facts:

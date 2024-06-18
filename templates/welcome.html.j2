@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="dist/base.css" type="text/css" />
+    </head>
+    <body class="m-0">
+        <div class="py-4">
+            <div class="container">
+                <h2>Hello, <strong>Galaxy</strong> is running!</h2>
+                This Galaxy instance is running on SURF Research Cloud. See <a href="{{ galaxy_src_documentation }}">here</a> for more documentation. 
+                <br>
+                {% if _galaxy_custom_repo | length > 0 %}
+                Some tools and/or workflows have been automatically installed from <a href="{{ _galaxy_custom_repo }}">this git repository (branch "{{ _galaxy_custom_repo_branch }}")</a>.
+                <br>
+                {% endif %}
+                Administrators may install additional tools: <br>
+                <a target="_blank" href="https://galaxyproject.org/admin/tools/add-tool-from-toolshed-tutorial/" class="btn btn-primary">Installing Tools »</a>
+            </div>
+            <br>
+            <div class="container">
+                <p>Help for using Galaxy is available:
+                    <a target="_parent" href="../tours/core.galaxy_ui" class="btn btn-secondary btn-sm">Galaxy UI</a>
+                    <a target="_parent" href="../tours/core.history" class="btn btn-secondary btn-sm">History</a>
+                    <a target="_parent" href="../tours/core.windows" class="btn btn-secondary btn-sm">Window Manager</a>
+                    <a target="_parent" href="../tours/core.deferred" class="btn btn-secondary btn-sm">Deferred Datasets</a>
+                </p>
+            </div>
+        </div>
+        <div class="container">
+            <p>
+                <a target="_blank" class="reference" href="http://galaxyproject.org/">
+                Galaxy</a> is an open platform for supporting data intensive
+                research. Galaxy is developed by <a target="_blank" class="reference" href="https://galaxyproject.org/galaxy-team/">The Galaxy Team</a>
+                with the support of  <a target="_blank" class="reference" href="https://github.com/galaxyproject/galaxy/blob/dev/CONTRIBUTORS.md">many contributors</a>.
+            </p>
+            <footer>
+                The <a target="_blank" class="reference" href="http://galaxyproject.org/">Galaxy Project</a>
+                is supported in part by <a target="_blank" class="reference" href="http://www.genome.gov">NHGRI</a>,
+                <a target="_blank" class="reference" href="http://www.nsf.gov">NSF</a>,
+                <a target="_blank" class="reference" href="http://www.huck.psu.edu">The Huck Institutes of the Life Sciences</a>,
+                <a target="_blank" class="reference" href="http://www.ics.psu.edu">The Institute for CyberScience at Penn State</a>,
+                and <a target="_blank" class="reference" href="http://www.jhu.edu/">Johns Hopkins University</a>.
+            </footer>
+        </div>
+    </body>
+</html>
