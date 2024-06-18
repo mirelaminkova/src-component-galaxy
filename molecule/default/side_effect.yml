@@ -1,0 +1,12 @@
+- name: Side Effect
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Make sure Galaxy is fully restarted before running idempotence
+      ansible.builtin.uri:
+        url: "http://localhost:8080/api/version"
+      register: galaxy_service_live
+      until: "galaxy_service_live.status == 200"
+      retries: 30
+      delay: 10 # check every 10 seconds for a maximum of 5 minutes

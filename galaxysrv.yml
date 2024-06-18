@@ -49,23 +49,27 @@
         append: true
       notify: restart nginx
 
-    - name: Get Galaxy service Status
-      ansible.builtin.systemd:
-        name: "galaxy.target"
-      check_mode: true
-      register: galaxy_status
+    - name: Populate service facts
+      ansible.builtin.service_facts:
 
-    - name: Restart the server and bootstrap if needed
+    - name: Enable the server and bootstrap
+      when: "ansible_facts.services['galaxy-gunicorn.service'] is not defined or ansible_facts.services['galaxy-gunicorn.service']['state'] != 'running' or _galaxy_do_bootstrap"
       block:
         - name: Galaxy gravity graceful
           command: "/usr/local/bin/galaxyctl graceful"
-          when: "galaxy_status.status.ActiveState == 'inactive' or _galaxy_do_bootstrap"
+
+        - name: Enable galaxy service
+          ansible.builtin.systemd_service:
+            name: galaxy.target
+            enabled: true
+            state: started
 
         - name: Include tasks to bootstrap the instance
           when: _galaxy_do_bootstrap 
           ansible.builtin.include_tasks: tasks/bootstrap.yml
 
       always:
+
         - name: Remove bootstrap API key from Galaxy config
           when: _galaxy_bootstrap_api_key is defined
           ansible.builtin.lineinfile:
@@ -90,3 +94,4 @@
     - name: Galaxy gravity restart
       command: "/usr/local/bin/galaxyctl graceful"
       listen: "restart galaxy"
+      when: _galaxy_already_started is not defined

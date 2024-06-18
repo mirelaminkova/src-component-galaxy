@@ -17,6 +17,7 @@ galaxy_privsep_user: gxpriv
 galaxy_group: galaxy
 galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
+galaxy_backup_configfiles: false
 postgresql_objects_users:
   - name: galaxy
     password: null
