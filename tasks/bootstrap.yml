@@ -56,11 +56,3 @@
     galaxy_tools_galaxy_instance_url: "http://{{ _galaxy_local_address }}"
     galaxy_tools_tool_list_files: "{{ (_galaxy_tool_files | default([])) + (_galaxy_custom_tool_files | default([])) }}"
     galaxy_tools_workflows: "{{ (_galaxy_workflow_files | default([])) + (_galaxy_custom_workflow_files | default([])) }}"
-
-- name: Remove bootstrap API key from Galaxy config
-  when: _galaxy_bootstrap_api_key is defined
-  ansible.builtin.lineinfile:
-    path: "{{ galaxy_config_dir }}/galaxy.yml"
-    regexp: '.*bootstrap_admin_api_key:'
-    state: absent
-  notify: galaxy gravity restart

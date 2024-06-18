@@ -55,13 +55,24 @@
       check_mode: true
       register: galaxy_status
 
-    - name: Galaxy gravity graceful
-      command: "/usr/local/bin/galaxyctl graceful"
-      when: "galaxy_status.status.ActiveState == 'inactive' or _galaxy_do_bootstrap"
+    - name: Restart the server and bootstrap if needed
+      block:
+        - name: Galaxy gravity graceful
+          command: "/usr/local/bin/galaxyctl graceful"
+          when: "galaxy_status.status.ActiveState == 'inactive' or _galaxy_do_bootstrap"
 
-    - name: Include tasks to bootstrap the instance
-      when: _galaxy_do_bootstrap 
-      ansible.builtin.include_tasks: tasks/bootstrap.yml
+        - name: Include tasks to bootstrap the instance
+          when: _galaxy_do_bootstrap 
+          ansible.builtin.include_tasks: tasks/bootstrap.yml
+
+      always:
+        - name: Remove bootstrap API key from Galaxy config
+          when: _galaxy_bootstrap_api_key is defined
+          ansible.builtin.lineinfile:
+            path: "{{ galaxy_config_dir }}/galaxy.yml"
+            regexp: '.*bootstrap_admin_api_key:'
+            state: absent
+          notify: galaxy gravity restart
 
   roles:
     - role: nginx-reverse_proxy
