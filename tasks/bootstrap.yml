@@ -49,6 +49,7 @@
     galaxy_tools_api_key: "{{ galaxy_config.galaxy.bootstrap_admin_api_key }}"
     galaxy_tools_create_bootstrap_user: true
     galaxy_tools_delete_bootstrap_user: true
+    galaxy_tools_bootstrap_user_remote: true
     galaxy_tools_install_tools: true
     galaxy_tools_install_workflows: true
     galaxy_tools_galaxy_publish_workflows: true
