@@ -2,7 +2,7 @@
 _galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool ) }}"
 _galaxy_tool_files: "{{ src_galaxy_tool_files | default('') | split(',') | select() }}"  # select() necessary because split on the default '' yields ['']
 _galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',') | select() }}"
-_galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_ws_admin', true) }}"
+_galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_co_admin', true) }}"
 _galaxy_custom_repo: "{{ src_galaxy_custom_repo | default('') }}"
 _galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', true) }}"
 _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
