@@ -1,8 +1,8 @@
 ---
 roles:
-  - src: https://github.com/dometto/ansible-galaxy.git
-    version: prebuilt_client
+  - src: https://github.com/galaxyproject/ansible-galaxy.git
     name: galaxyproject.galaxy
+    version: 08974b18e2aad1e5569854e5d6c8b5c966bf55e4
   - src: https://github.com/dometto/ansible-galaxy-tools.git
     name: galaxyproject.galaxy-tools
   - src: galaxyproject.postgresql
@@ -17,3 +17,4 @@ collections:
   - name: community.postgresql
   - name: https://github.com/UtrechtUniversity/researchcloud-items.git
     type: git
+    version: cdc876defd67db078a5a5e1a64f485a18aea586f
