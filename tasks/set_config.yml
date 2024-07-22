@@ -22,7 +22,7 @@
     _galaxy_do_bootstrap:  "{{ _galaxy_bootstrap and _galaxy_tool_files | length + _galaxy_workflow_files | length + _galaxy_custom_repo | length  > 0}}"
 
 - name: Generate a bootstrap key
-  when: _galaxy_do_bootstrap
+  when: _galaxy_do_bootstrap and not _molecule_idempotence
   ansible.builtin.set_fact:
     _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=50) }}"
 
@@ -40,4 +40,4 @@
 # _galaxy_config is then passed to the role in galaxysrv.yml
 - name: Save _galaxy_config
   ansible.builtin.set_fact:
-    _galaxy_config: "{{ galaxy_config }}"
+    _galaxy_config: "{{ galaxy_configuration }}"

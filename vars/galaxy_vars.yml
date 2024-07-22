@@ -40,7 +40,7 @@ galaxy_job_config:
   tools:
     - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
       environment: local_env
-galaxy_config:
+galaxy_configuration:
   galaxy:
     use_remote_user: true
     allow_user_creation: true
