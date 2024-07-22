@@ -20,27 +20,20 @@
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
-  tasks:
-
-    - name: Workaround to install requirements.yml on SURF ResearchCloud
-      ansible.builtin.include_role: { name: install_roles }
-      tags: molecule-notest
-
-    - name: Include role installed using install_roles workaround
-      ansible.builtin.include_role: { name: galaxyproject.postgresql }
-
-    - name: Include role installed using install_roles workaround
-      ansible.builtin.include_role:
-        name: galaxyproject.postgresql_objects
-        apply:
-          become: true
-          become_user: postgres
-
-    - name: Include role installed using install_roles workaround
-      ansible.builtin.include_role:
-        name: galaxyproject.galaxy
+  roles:
+    - role: uusrc.general.fact_regular_users
+    - role: uusrc.general.nginx_reverse_proxy
+      vars:
+        nginx_reverse_proxy_locations: "{{ galaxy_nginx_vhost_config }}"
+    - role: galaxyproject.postgresql
+    - role: galaxyproject.postgresql_objects
+      become: true
+      become_user: postgres
+    - role: galaxyproject.galaxy
       vars:
         galaxy_config: "{{ _galaxy_config }}"
+  
+  tasks:
 
     - name: Add nginx user to galaxy group
       ansible.builtin.user:
@@ -85,11 +78,6 @@
             regexp: '.*bootstrap_admin_api_key:'
             state: absent
           notify: galaxy gravity restart
-
-  roles:
-    - role: nginx-reverse_proxy
-      vars:
-        nginx_reverse_proxy_locations: "{{ galaxy_nginx_vhost_config }}"
 
   handlers:
 

@@ -15,3 +15,5 @@ roles:
 collections:
   - name: community.general
   - name: community.postgresql
+  - name: https://github.com/UtrechtUniversity/researchcloud-items.git
+    type: git

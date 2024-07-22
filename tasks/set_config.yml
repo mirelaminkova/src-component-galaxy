@@ -1,8 +1,4 @@
 ---
-- name: Gather CO info facts
-  ansible.builtin.include_role: {name: fact_regular_users }
-  tags: molecule-notest
-
 - name: Load internal variables
   ansible.builtin.include_vars: vars/internal_vars.yml
 
