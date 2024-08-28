@@ -5,17 +5,18 @@
 - name: Load component variables
   ansible.builtin.include_vars: vars/src_galaxy_vars.yml
 
-- name: Set admins
-  block:
-    - name: Set admins from CO group
-      ansible.builtin.set_fact:
-        _galaxy_admins: "{{ fact_co_groups[_galaxy_admin_co_group] | product(['@' + _galaxy_remote_user_maildomain]) | map('join') | list | join(',') }}"
-      when: fact_co_groups[_galaxy_admin_co_group] is defined
+- name: Load interactive tools variables
+  ansible.builtin.include_vars: vars/interactive_tools_vars.yml
 
-    - name: Set no admins
-      ansible.builtin.set_fact:
-        _galaxy_admins: ""
-      when: fact_co_groups[_galaxy_admin_co_group] is not defined
+- name: Set admins from CO group
+  ansible.builtin.set_fact:
+    _galaxy_admins: "{{ fact_co_groups[_galaxy_admin_co_group] | product(['@' + _galaxy_remote_user_maildomain]) | map('join') | list | join(',') | default('') }}"
+  when: fact_co_groups[_galaxy_admin_co_group] is defined
+
+- name: Set admins to blank
+  ansible.builtin.set_fact:
+    _galaxy_admins: ''
+  when: fact_co_groups[_galaxy_admin_co_group] is not defined
 
 - name: Determine whether to bootstrap Galaxy
   set_fact:

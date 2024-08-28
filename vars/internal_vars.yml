@@ -19,3 +19,9 @@ _galaxy_root: /srv/galaxy
 _galaxy_local_address: localhost:8080
 
 galaxy_src_documentation: https://github.com/UtrechtUniversity/vre-docs
+
+# Variables for the docker role
+
+docker_install_compose: false
+docker_users:
+  - "{{ galaxy_user }}"

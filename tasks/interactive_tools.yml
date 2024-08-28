@@ -1,0 +1,8 @@
+---
+- ansible.builtin.template:
+    src: "templates/nginx/galaxy-gie-proxy.j2"
+    dest: "/etc/nginx/conf.d/gie-server.conf"
+    mode: "0640"
+    owner: "www-data"
+    group: "www-data"
+  notify: restart nginx

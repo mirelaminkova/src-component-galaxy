@@ -6,6 +6,8 @@ _galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_co_admin', 
 _galaxy_custom_repo: "{{ src_galaxy_custom_repo | default('') }}"
 _galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', true) }}"
 _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
+_galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, true) | bool }}"
+_galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
 
 # Note that some component parameters are also used in galaxy_vars.yml:
 # src_galaxy_storage_path

@@ -14,4 +14,14 @@ galaxy_nginx_vhost_config:
   - name: static_plugins
     location: "~ ^/plugins/(?<plug_type>.+?)/(?<vis_name>.+?)/static/(?<static_file>.*?)$"
     expires: '24'
+    alias: "{{ galaxy_server_dir }}/config/plugins/$plug_type/$vis_name/static/$static_file"
     auth: noauth
+  - name: favicon
+    location: /favicon.ico
+    expires: 24h
+    auth: noauth
+  - name: interactive_tools
+    location: "~* ^/(interactivetool/.+)$"
+    proxy_redirect: 'off'
+    proxy_http_version: '1.1'
+    proxy_pass: "http://localhost:{{ gie_proxy_port }}"

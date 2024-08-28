@@ -4,6 +4,10 @@
 
   pre_tasks:
 
+    - name: Set workspace user facts
+      ansible.builtin.include_role:
+        name: uusrc.general.fact_regular_users
+
     - name: Include config tasks and load variables
       ansible.builtin.include_tasks: tasks/set_config.yml
 
@@ -21,7 +25,8 @@
         state: present
 
   roles:
-    - role: uusrc.general.fact_regular_users
+    - role: geerlingguy.docker
+      when: not _molecule_active
     - role: uusrc.general.nginx_reverse_proxy
       vars:
         nginx_reverse_proxy_locations: "{{ galaxy_nginx_vhost_config }}"
@@ -34,6 +39,10 @@
         galaxy_config: "{{ _galaxy_config }}"
   
   tasks:
+
+    - name: Configure nginx for interactive tools
+      ansible.builtin.include_tasks: tasks/interactive_tools.yml
+      when: _galaxy_use_interactive_tools
 
     - name: Add nginx user to galaxy group
       ansible.builtin.user:
