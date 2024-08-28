@@ -25,7 +25,7 @@ Galaxy is configured to let the webserver (Nginx) handle authentication. The web
 
 Any members of the workspace's Collaborative Organisation (CO) will be able to authenticate using the authentication mechanism of their institution (Single Sign-On).
 
-Galaxy is configured such that members of the CO that are in the SRAM workspace admin group (`src_ws_admin`) will be Galaxy administrators. Other users are normal users.
+Galaxy is configured such that members of the CO that are in the SRAM workspace admin group (`src_co_admin`) will be Galaxy administrators. Other users are normal users.
 
 ### ResearchCloud parameters
 
