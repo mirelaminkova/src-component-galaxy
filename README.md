@@ -32,6 +32,7 @@ Galaxy is configured such that members of the CO that are in the SRAM workspace 
 The component takes the following parameters:
 
 * `src_galaxy_version`: set to e.g. `23.0` (default) to control the version of Galaxy that will be installed.
+* `src_ibridges`: Boolean (default: `true`). Whether to enable support for the [iBridges](https://github.com/UtrechtUniversity/galaxy-tools-ibridges) tool for connecting to Yoda and iRODS instances. Implies `src_galaxy_bootstrap`, and adds iBridges to the list of tools to be installed automatically.
 * `src_galaxy_storage_path`: **Interactive parameter**. Default: `/srv/galaxy/datadir`. Path where Galaxy's "mutable data directory" will be located, including the following files:
 
 ```

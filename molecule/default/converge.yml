@@ -8,3 +8,4 @@
   vars:
     src_galaxy_tool_files: "{{ playbook_dir ~ '/molecule/_testfiles/tool_list.yaml.sample' }}"
     src_galaxy_workflow_files: "{{ playbook_dir ~ '/molecule/_testfiles/sample-workflow.ga' }}"
+    src_ibridges: 'true'

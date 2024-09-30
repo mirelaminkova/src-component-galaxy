@@ -1,6 +1,12 @@
 # Variables derived from component parameters in ResearchCLoud
+
 _galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool ) }}"
-_galaxy_tool_files: "{{ src_galaxy_tool_files | default('') | split(',') | select() }}"  # select() necessary because split on the default '' yields ['']
+_galaxy_ibridges_enabled: "{{ src_ibridges | default(true, true) | bool }}"
+_galaxy_default_tool_files:
+  - path: tools/ibridges.yml
+    enabled: "{{ _galaxy_ibridges_enabled }}"
+_galaxy_default_tool_files_list: "{{ _galaxy_default_tool_files | selectattr('enabled') | map(attribute='path') | list }}"
+_galaxy_tool_files: "{{ src_galaxy_tool_files | default('', true) | split(',') | select() + _galaxy_default_tool_files_list }}"  # select() necessary because split on the default '' yields ['']
 _galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',') | select() }}"
 _galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_co_admin', true) }}"
 _galaxy_custom_repo: "{{ src_galaxy_custom_repo | default('') }}"
@@ -8,7 +14,6 @@ _galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', 
 _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
 _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, true) | bool }}"
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
-
 # Note that some component parameters are also used in galaxy_vars.yml:
 # src_galaxy_storage_path
 # src_galaxy_version

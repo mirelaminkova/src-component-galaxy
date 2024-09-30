@@ -19,6 +19,8 @@ galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
 galaxy_backup_configfiles: false
 galaxy_config_templates:
+  - src: templates/galaxy/config/user_preferences_extra_conf.yml.j2
+    dest: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
   - src: templates/galaxy/config/job_conf.xml.j2
     dest: "{{ galaxy_config_dir }}/job_conf.xml"
 postgresql_objects_users:
@@ -37,6 +39,7 @@ galaxy_configuration:
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
     job_config_file: "{{ galaxy_config_dir }}/job_conf.xml"
+    user_preferences_extra_conf_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
     interactivetools_enable: "{{ _galaxy_use_interactive_tools }}"
     interactivetools_map: "{{ _galaxy_use_interactive_tools | ternary(gie_proxy_sessions_path, omit) }}"
     galaxy_infrastructure_url: "{{ _galaxy_local_address }}"

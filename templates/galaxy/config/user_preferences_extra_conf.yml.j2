@@ -1,0 +1,14 @@
+preferences:
+{% if _galaxy_ibridges_enabled %}
+    irods_yoda:
+        description: Your YODA account
+        inputs:
+            - name: username
+              label: Username
+              type: text
+              required: True
+            - name: password
+              label: Data Access Password
+              type: secret
+              required: True
+{% endif %}
