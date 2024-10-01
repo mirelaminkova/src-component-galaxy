@@ -38,7 +38,8 @@ galaxy_job_config:
       workers: 4
     pulsar_embedded:
       load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-      workers: 4
+      workers: 2
+      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
   handling:
     assign: ['db-skip-locked']
   execution:
@@ -56,7 +57,7 @@ galaxy_job_config:
         docker_auto_rm: true
         docker_set_user:
         require_container: true
-        container_monitor_result: callback
+        container_monitor_result: "{{ _galaxy_jobs_pulsar_embedded | ternary('callback', omit) }}"
         env:
           REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
       docker_dispatch:
