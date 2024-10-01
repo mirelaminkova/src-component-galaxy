@@ -1,0 +1,25 @@
+runners:
+  local:
+    load: galaxy.jobs.runners.local:LocalJobRunner
+    workers: 4
+
+execution:
+  default: docker_dispatch
+  environments:
+    local:
+      runner: local
+
+    docker_local:
+      runner: local
+      docker_enabled: true
+      docker_set_user:
+
+    docker_dispatch:
+      runner: dynamic
+      type: docker_dispatch
+      docker_destination_id: docker_local
+      default_destination_id: local
+
+tools:
+  - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
+    environment: local_env

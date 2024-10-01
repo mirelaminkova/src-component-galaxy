@@ -21,8 +21,8 @@ galaxy_backup_configfiles: false
 galaxy_config_templates:
   - src: templates/galaxy/config/user_preferences_extra_conf.yml.j2
     dest: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
-  - src: templates/galaxy/config/job_conf.xml.j2
-    dest: "{{ galaxy_config_dir }}/job_conf.xml"
+  - src: templates/galaxy/config/job_conf.ymlj2
+    dest: "{{ galaxy_config_dir }}/job_conf.yml"
   - src: templates/galaxy/config/pulsar_app.yml.j2
     dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
 postgresql_objects_users:
@@ -31,68 +31,10 @@ postgresql_objects_users:
 postgresql_objects_databases:
   - name: galaxy
     owner: galaxy
-galaxy_job_config:
-  runners:
-    local_runner:
-      load: galaxy.jobs.runners.local:LocalJobRunner
-      workers: 4
-    pulsar_embedded:
-      load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-      workers: 2
-      pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
-  handling:
-    assign: ['db-skip-locked']
-  execution:
-    default: "{{ _galaxy_jobs_docker | ternary('docker_dispatch', 'local_env') }}"
-    environments:
-      local_env:
-        runner: local_runner
-        tmp_dir: true
-      docker_local:
-        runner: "{{ _galaxy_jobs_pulsar_embedded | ternary('pulsar_embedded', 'local_runner') }}"
-        docker_enabled: true
-        docker_volumes: $defaults
-        docker_sudo: false
-        docker_net: bridge
-        docker_auto_rm: true
-        docker_set_user:
-        require_container: true
-        container_monitor_result: "{{ _galaxy_jobs_pulsar_embedded | ternary('callback', omit) }}"
-        env:
-          REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
-      docker_dispatch:
-        runner: dynamic
-        type: docker_dispatch
-        docker_destination_id: docker_local
-        default_destination_id: local_env
-      singularity:
-        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw"
-        runner: local_runner
-        singularity_enabled: true
-        container_resolvers:
-          - type: cached_explicit_singularity
-            cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
-          - type: cached_mulled_singularity
-            cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
-          - type: mulled_singularity
-            auto_install: false
-            cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
-          - type: build_mulled_singularity
-            auto_install: false
-            cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
-        env:
-          # Ensuring a consistent collation environment is good for reproducibility.
-          - name: LC_ALL
-            value: C
-          # The cache directory holds the docker containers that get converted
-          - name: APPTAINER_CACHEDIR
-            value: /tmp/singularity
-          # Apptainer uses a temporary directory to build the squashfs filesystem
-          - name: APPTAINER_TMPDIR
-            value: /tmp
-  tools:
-    - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
-      environment: local_env
+pulsar_embedded_runner:
+  load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
+  workers: 2
+  pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
 galaxy_configuration:
   galaxy:
     use_remote_user: true
@@ -102,7 +44,7 @@ galaxy_configuration:
     remote_user_maildomain: "{{ _galaxy_remote_user_maildomain }}"
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
-    job_config: "{{ galaxy_job_config }}"
+    job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
     tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml"
     user_preferences_extra_conf_path: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
     interactivetools_enable: "{{ _galaxy_use_interactive_tools }}"
