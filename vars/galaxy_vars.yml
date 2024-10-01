@@ -31,10 +31,6 @@ postgresql_objects_users:
 postgresql_objects_databases:
   - name: galaxy
     owner: galaxy
-pulsar_embedded_runner:
-  load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
-  workers: 2
-  pulsar_config: "{{ galaxy_config_dir }}/pulsar_app.yml"
 galaxy_configuration:
   galaxy:
     use_remote_user: true

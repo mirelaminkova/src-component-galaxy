@@ -13,7 +13,6 @@ _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
 _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, true) | bool }}"
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
 _galaxy_jobs_docker: "{{ _galaxy_use_interactive_tools or (src_galaxy_jobs_docker | default(true, false) | bool )  }}"
-_galaxy_jobs_pulsar_embedded: "{{ src_galaxy_pulsar_embedded | default(_galaxy_use_interactive_tools, true) | bool }}"
 
 # Build the final lists of tool and workflow installation files
 _galaxy_tool_files: "{{ src_galaxy_tool_files | default('', true) | split(',') | select() + _galaxy_default_tool_files_list }}"  # select() necessary because split on the default '' yields ['']
