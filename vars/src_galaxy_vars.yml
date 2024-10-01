@@ -14,6 +14,9 @@ _galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', 
 _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
 _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, true) | bool }}"
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
+_galaxy_jobs_docker: "{{ _galaxy_use_interactive_tools or (src_galaxy_jobs_docker | default(true, false) | bool )  }}"
+_galaxy_jobs_pulsar_embedded: "{{ src_galaxy_pulsar_embedded | default(_galaxy_use_interactive_tools, true) | bool }}"
+
 # Note that some component parameters are also used in galaxy_vars.yml:
 # src_galaxy_storage_path
 # src_galaxy_version
