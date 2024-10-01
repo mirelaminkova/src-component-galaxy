@@ -36,7 +36,7 @@ galaxy_job_config:
     local_runner:
       load: galaxy.jobs.runners.local:LocalJobRunner
       workers: 4
-    puslar_embedded:
+    pulsar_embedded:
       load: galaxy.jobs.runners.pulsar:PulsarEmbeddedJobRunner
       workers: 4
   handling:
@@ -50,7 +50,7 @@ galaxy_job_config:
       docker_interactive:
         runner: "{{ _galaxy_jobs_pulsar_embedded | ternary('pulsar_embedded', 'local_runner') }}"
         docker_enabled: true
-        docker_volumes: $defaults,/mnt/galaxyData/libraries:ro,/mnt/galaxyData/indices:ro
+        docker_volumes: $defaults
         docker_sudo: false
         docker_net: bridge
         docker_auto_rm: true
@@ -65,7 +65,7 @@ galaxy_job_config:
         docker_destination_id: docker_interactive
         default_destination_id: local_env
       singularity:
-        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_data_dir }}:rw"
+        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw"
         runner: local_runner
         singularity_enabled: true
         container_resolvers:
@@ -74,10 +74,10 @@ galaxy_job_config:
           - type: cached_mulled_singularity
             cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
           - type: mulled_singularity
-            auto_install: False
+            auto_install: false
             cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
           - type: build_mulled_singularity
-            auto_install: False
+            auto_install: false
             cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
         env:
           # Ensuring a consistent collation environment is good for reproducibility.
