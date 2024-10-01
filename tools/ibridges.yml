@@ -2,7 +2,7 @@
 tools:
 - name: ibridges
   owner: maarten.schermer
-  tool_panel_section_id: iBridges
+  tool_panel_section_label: iBridges
   tool_shed_url: https://toolshed.g2.bx.psu.edu
   revisions:
   - '6194155810b6'  # v0.2
