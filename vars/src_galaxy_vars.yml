@@ -6,8 +6,6 @@ _galaxy_default_tool_files:
   - path: tools/ibridges.yml
     enabled: "{{ _galaxy_ibridges_enabled }}"
 _galaxy_default_tool_files_list: "{{ _galaxy_default_tool_files | selectattr('enabled') | map(attribute='path') | list }}"
-_galaxy_tool_files: "{{ src_galaxy_tool_files | default('', true) | split(',') | select() + _galaxy_default_tool_files_list }}"  # select() necessary because split on the default '' yields ['']
-_galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',') | select() }}"
 _galaxy_admin_co_group: "{{ src_galaxy_co_admin_group | default('src_co_admin', true) }}"
 _galaxy_custom_repo: "{{ src_galaxy_custom_repo | default('') }}"
 _galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', true) }}"
@@ -16,6 +14,10 @@ _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, 
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
 _galaxy_jobs_docker: "{{ _galaxy_use_interactive_tools or (src_galaxy_jobs_docker | default(true, false) | bool )  }}"
 _galaxy_jobs_pulsar_embedded: "{{ src_galaxy_pulsar_embedded | default(_galaxy_use_interactive_tools, true) | bool }}"
+
+# Build the final lists of tool and workflow installation files
+_galaxy_tool_files: "{{ src_galaxy_tool_files | default('', true) | split(',') | select() + _galaxy_default_tool_files_list }}"  # select() necessary because split on the default '' yields ['']
+_galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',') | select() }}"
 
 # Note that some component parameters are also used in galaxy_vars.yml:
 # src_galaxy_storage_path
