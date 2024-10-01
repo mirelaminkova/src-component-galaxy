@@ -42,12 +42,12 @@ galaxy_job_config:
   handling:
     assign: ['db-skip-locked']
   execution:
-    default: "{{ _galaxy_use_interactive_tools | ternary('docker_dispatch', 'local_env') }}"
+    default: "{{ _galaxy_jobs_docker | ternary('docker_dispatch', 'local_env') }}"
     environments:
       local_env:
         runner: local_runner
         tmp_dir: true
-      docker_interactive:
+      docker_local:
         runner: "{{ _galaxy_jobs_pulsar_embedded | ternary('pulsar_embedded', 'local_runner') }}"
         docker_enabled: true
         docker_volumes: $defaults
@@ -62,7 +62,7 @@ galaxy_job_config:
       docker_dispatch:
         runner: dynamic
         type: docker_dispatch
-        docker_destination_id: docker_interactive
+        docker_destination_id: docker_local
         default_destination_id: local_env
       singularity:
         singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw"
