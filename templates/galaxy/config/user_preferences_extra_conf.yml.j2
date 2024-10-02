@@ -1,7 +1,7 @@
 preferences:
 {% if _galaxy_ibridges_enabled %}
-    irods_yoda:
-        description: Your YODA account
+    irods_config:
+        description: Your iRODS account
         inputs:
             - name: username
               label: Username
@@ -11,8 +11,8 @@ preferences:
               label: Data Access Password
               type: secret
               required: True
-            - name: config
+            - name: env
               label: Config
               required: True
-              type: text 
+              type: text
 {% endif %}
