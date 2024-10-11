@@ -2,3 +2,15 @@ gie_proxy_dir: "{{ _galaxy_root }}/gie-proxy/proxy"
 gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
 gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 4002
+
+#CVMFS vars 
+cvfms_role: client
+galaxy_cvmfs_repos_enabled: true
+cvmfs_quota_limit: 8000
+# override the default
+galaxy_cvmfs_server_urls:
+  - domain: galaxyproject.org
+    use_geoapi: true
+    urls:
+      - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
+      - "http://cvmfs1-psu0.galaxyproject.org/cvmfs/@fqrn@"
