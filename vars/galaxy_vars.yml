@@ -1,9 +1,8 @@
----
-# Variables for the galaxyproject.galaxy role
+# Variables for the Galaxy project role
 galaxy_config_style: yaml
 galaxy_layout: custom
 galaxy_server_dir: "{{ _galaxy_root }}/server"
-galaxy_root: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxyproject/ansible-galaxy/issues/138
+galaxy_root: "{{ galaxy_server_dir }}"  # workaround for a known issue https://github.com/galaxyproject/ansible-galaxy/issues/138
 galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
@@ -21,21 +20,74 @@ galaxy_group: galaxy
 galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
 galaxy_backup_configfiles: false
+
+# Defining the variables for galaxy/config
+user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
+job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
+pulsar_config_file: "{{ galaxy_config_dir }}/pulsar_app.yml"
+container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
+dependency_resolvers_config_file: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
+
+# Galaxy config templates
 galaxy_config_templates:
   - src: templates/galaxy/config/user_preferences_extra_conf.yml.j2
-    dest: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
+    dest: "{{ user_preference_config_file }}"
   - src: templates/galaxy/config/job_conf.yml.j2
-    dest: "{{ galaxy_config_dir }}/job_conf.yml"
+    dest: "{{ job_config_file }}"
+  - src: templates/galaxy/config/container_resolvers_conf.yml.j2
+    dest: "{{ container_resolvers_config_file }}"
   - src: templates/galaxy/config/dependency_resolvers_conf.xml.j2
-    dest: "{{ galaxy_config_dir }}/dependency_resolvers_conf.xml"
+    dest: "{{ dependency_resolvers_config_file }}"
+#- src: templates/galaxy/config/dependency_resolvers_conf.xml
+#     dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
 postgresql_objects_users:
   - name: galaxy
     password:
 postgresql_objects_databases:
   - name: galaxy
     owner: galaxy
+
+# Job config Singularity and CVMFS
+galaxy_job_config:
+  runners:
+    local_runner:
+      load: galaxy.jobs.runners.local:LocalJobRunner
+      workers: 4
+  handling:
+    assign: ['db-skip-locked']
+  execution:
+    default: singularity
+    environments:
+      local_env:
+        runner: local_runner
+        tmp_dir: true
+      singularity:
+        singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_data_dir }}:rw"
+        runner: local_runner
+        singularity_enabled: true
+        container_resolvers:
+        - type: cached_explicit_singularity
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
+        - type: cached_mulled_singularity
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
+        - type: mulled_singularity
+          auto_install: False
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
+        - type: build_mulled_singularity
+          auto_install: False
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
+        env:
+        - name: LC_ALL
+          value: C
+        - name: APPTAINER_CACHEDIR
+          value: /tmp/singularity
+        - name: APPTAINER_TMPDIR
+          value: /tmp
+
+# Galaxy configuration section
 galaxy_configuration:
   galaxy:
+    brand: "SURF Research Cloud"
     use_remote_user: true
     allow_user_creation: true
     allow_user_deletion: true
@@ -44,9 +96,9 @@ galaxy_configuration:
     remote_user_secret: "{{ _galaxy_remote_user_secret }}"
     database_connection: postgresql:///galaxy?host=/var/run/postgresql
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
-    job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
+    job_config_file: "{{ job_config_file }}"
     tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml"
-    user_preferences_extra_conf_path: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
+    user_preferences_extra_conf_path: "{{ user_preference_config_file }}"
     interactivetools_enable: "{{ _galaxy_use_interactive_tools }}"
     interactivetools_map: "{{ _galaxy_use_interactive_tools | ternary(gie_proxy_sessions_path, omit) }}"
     galaxy_infrastructure_url: "{{ _galaxy_infrastructure_url }}"
@@ -54,15 +106,21 @@ galaxy_configuration:
     outputs_to_working_directory: "{{ _galaxy_use_interactive_tools }}"
     bootstrap_admin_api_key: "{{ _galaxy_bootstrap_api_key | default(omit) }}"
     nginx_x_accel_redirect_base: '/_x_accel_redirect'
+    # CVMFS
+    tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
+    dependency_resolvers_config_file: "{{ dependency_resolvers_config_file }}"
+    container_resolvers_config_file: "{{ container_resolvers_config_file }}"
+
   gravity:
     galaxy_root: "{{ galaxy_server_dir }}"
     galaxy_user: "{{ galaxy_user }}"
     virtualenv: "{{ galaxy_venv_dir }}"
     process_manager: systemd
+
     gunicorn:
-      # listening options
+      # Listening options
       bind: "{{ _galaxy_local_address }}"
-      # performance options
+      # Performance options
       workers: 2
       # Other options that will be passed to gunicorn
       # This permits setting of 'secure' headers like REMOTE_USER (and friends)
@@ -71,6 +129,7 @@ galaxy_configuration:
       # This lets Gunicorn start Galaxy completely before forking which is faster.
       # https://docs.gunicorn.org/en/stable/settings.html#preload-app
       preload: true
+
     celery:
       concurrency: 2
       enable_beat: true
@@ -79,11 +138,7 @@ galaxy_configuration:
       pool: threads
       memory_limit: 2
       loglevel: DEBUG
+
     gx_it_proxy:
       enable: "{{ _galaxy_use_interactive_tools }}"
       port: "{{ gie_proxy_port }}"
-    tusd:
-      enable: "{{ _galaxy_enable_tus }}"
-      tusd_path: /usr/local/sbin/tusd
-      upload_dir: "{{ galaxy_tus_upload_store }}"
-      port: "{{ galaxy_tusd_port }}"

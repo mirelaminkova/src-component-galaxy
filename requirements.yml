@@ -16,6 +16,8 @@ roles:
     version: e009b498a7989d8002c6a5d104176295d63e9fae
   - src: usegalaxy_eu.apptainer
     version: 0.0.1
+  - src: galaxyproject.cvmfs
+    version: 0.2.21
 collections:
   - name: community.general
   - name: community.postgresql

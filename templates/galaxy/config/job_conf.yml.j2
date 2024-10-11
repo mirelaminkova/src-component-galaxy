@@ -8,7 +8,10 @@ execution:
   environments:
     local:
       runner: local
-
+      env:
+        - name: PATH
+          action: prepend_to
+          value: /srv/galaxy/datadir/shed_tools:$PATH
     docker:
       runner: local
       docker_enabled: true
@@ -21,6 +24,33 @@ execution:
       type: python
       function: {{ _galaxy_default_dispatcher }}
 {% endif %}
+
+    singularity:
+      singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw"
+      runner: local_runner
+      singularity_enabled: true
+      container_resolvers:
+        - type: cached_explicit_singularity
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
+        - type: cached_mulled_singularity
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
+        - type: mulled_singularity
+          auto_install: False
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
+        - type: build_mulled_singularity
+          auto_install: False
+          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
+      env:
+        # Ensuring a consistent collation environment is good for reproducibility.
+        - name: LC_ALL
+          value: C
+        # The cache directory holds the docker containers that get converted
+        - name: APPTAINER_CACHEDIR
+          value: /tmp/singularity
+        # Apptainer uses a temporary directory to build the squashfs filesystem
+        - name: APPTAINER_TMPDIR
+          value: /tmp
+
 tools:
   - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
     environment: local

@@ -27,6 +27,8 @@
       ansible.builtin.include_tasks: tasks/nginx.yml
 
   roles:
+    - galaxyproject.cvmfs
+    - usegalaxy_eu.apptainer
     - role: geerlingguy.docker
       when: not _molecule_active and _galaxy_enable_docker
     - role: uusrc.general.nginx_reverse_proxy
