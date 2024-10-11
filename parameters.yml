@@ -1,0 +1,3 @@
+src_galaxy_bootstrap: false
+src_galaxy_interactive_tools: false
+workspace_fqdn: galaxy.uu-surfcodevop.src.surf-hosted.nl
