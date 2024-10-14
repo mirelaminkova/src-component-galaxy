@@ -7,7 +7,7 @@ galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
 galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_galaxy_root+'/datadir', true) }}" # component variable src_galaxy_storage_path
-galaxy_commit_id: "release_{{ src_galaxy_version | default('23.2', true) }}" # component variable src_galaxy_version
+galaxy_commit_id: "release_{{ src_galaxy_version | default('24.0', true) }}" # component variable src_galaxy_version
 galaxy_separate_privileges: true
 galaxy_create_user: true
 galaxy_manage_paths: true
@@ -18,13 +18,22 @@ galaxy_group: galaxy
 galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
 galaxy_backup_configfiles: false
+
+#Defining the variables for galaxy/config 
+user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
+job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
+pulsar_config_file: "{{ galaxy_config_dir }}/pulsar_app.yml"
+container_resolvers_config_file: "{{galaxy_config_dir }}/container_resolvers_conf.yml"
+
 galaxy_config_templates:
   - src: templates/galaxy/config/user_preferences_extra_conf.yml.j2
-    dest: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
+    dest: "{{ user_preference_config_file }}"
   - src: templates/galaxy/config/job_conf.yml.j2
-    dest: "{{ galaxy_config_dir }}/job_conf.yml"
+    dest: "{{ job_config_file }}"
   - src: templates/galaxy/config/pulsar_app.yml.j2
-    dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
+    dest: "{{ pulsar_config_file }}"
+  - src: templates/galaxy/config/container_resolvers_conf.yml.j2"
+    dest: "{{ container_resolvers_config_file }}"
 postgresql_objects_users:
   - name: galaxy
     password: null
@@ -81,7 +90,7 @@ galaxy_configuration:
     remote_user_maildomain: "{{ _galaxy_remote_user_maildomain }}"
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
-    job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
+    job_config_file: "{{ job_config_file }}"
     tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml"
     user_preferences_extra_conf_path: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
     interactivetools_enable: "{{ _galaxy_use_interactive_tools }}"
@@ -124,8 +133,8 @@ galaxy_configuration:
     gx_it_proxy:
       enable: "{{ _galaxy_use_interactive_tools }}"
       port: "{{ gie_proxy_port }}"
-galaxy_config_templates:
+#galaxy_config_templates:
   #  - src: templates/galaxy/config/container_resolvers_conf.yml.j2
   #    dest: "{{ galaxy_config.galaxy.container_resolvers_config_file }}"
-  - src: templates/galaxy/config/dependency_resolvers_conf.xml
-    dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
+#  - src: templates/galaxy/config/dependency_resolvers_conf.xml
+#    dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
