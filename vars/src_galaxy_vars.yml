@@ -1,6 +1,6 @@
 # Variables derived from component parameters in ResearchCLoud
 
-_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool ) }}"
+_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(false, false) | bool ) }}"
 _galaxy_ibridges_enabled: "{{ src_ibridges | default(true, true) | bool }}"
 _galaxy_default_tool_files:
   - path: tools/ibridges.yml
