@@ -4,7 +4,7 @@ gie_proxy_path_prefix: /interactivetool/ep
 gie_proxy_port: 4002
 
 #CVMFS vars 
-cvfms_role: client
+cvmfs_role: client
 galaxy_cvmfs_repos_enabled: true
 cvmfs_quota_limit: 8000
 # override the default
