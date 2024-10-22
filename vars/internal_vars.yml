@@ -20,6 +20,8 @@ _galaxy_local_address: localhost:8080
 
 galaxy_src_documentation: https://github.com/UtrechtUniversity/vre-docs
 
+_galaxy_default_dispatcher: default_dispatcher # function and file name for the dynamic job handler used by interactive tools
+
 # Variables for the docker role
 
 docker_install_compose: false

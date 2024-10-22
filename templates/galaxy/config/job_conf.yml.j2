@@ -4,23 +4,23 @@ runners:
     workers: 4
 
 execution:
-  default: docker_dispatch
+  default: {{ _galaxy_default_dispatcher if _galaxy_use_interactive_tools else _galaxy_jobs_default }}
   environments:
     local:
       runner: local
 
-    docker_local:
+    docker:
       runner: local
       docker_enabled: true
       docker_set_user:
       docker_sudo: false
 
-    docker_dispatch:
+{% if _galaxy_use_interactive_tools %}
+    {{ _galaxy_default_dispatcher }}:
       runner: dynamic
-      type: docker_dispatch
-      docker_destination_id: docker_local
-      default_destination_id: local
-
+      type: python
+      function: {{ _galaxy_default_dispatcher }}
+{% endif %}
 tools:
   - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
     environment: local

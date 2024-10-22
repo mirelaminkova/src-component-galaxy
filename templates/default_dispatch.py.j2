@@ -1,0 +1,8 @@
+from galaxy.jobs import JobDestination
+import os
+
+def {{ _galaxy_default_dispatcher }}(tool):
+  if tool.tool_type == 'interactive':
+    return 'docker'
+  else:
+    return '{{ _galaxy_jobs_default }}'

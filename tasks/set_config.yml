@@ -5,6 +5,13 @@
 - name: Load component variables
   ansible.builtin.include_vars: vars/src_galaxy_vars.yml
 
+- name: Sanity check
+  block:
+    - name: Assert default handler is valid
+      ansible.builtin.assert:
+        that:
+          - "['singularity', 'docker', 'local'] is contains(_galaxy_jobs_default)"
+
 - name: Load interactive tools variables
   ansible.builtin.include_vars: vars/interactive_tools_vars.yml
 

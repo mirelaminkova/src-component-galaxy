@@ -34,8 +34,8 @@ The component takes the following parameters:
 * `src_galaxy_version`: String. Set to e.g. `23.2` (default) to control the version of Galaxy that will be installed.
 * `src_galaxy_api_exposed`: Boolean. if `true` (default), the `/api` route does not require authentication via Single Sign-On.
 * `src_ibridges`: Boolean (default: `true`). Whether to enable support for the [iBridges](https://github.com/UtrechtUniversity/galaxy-tools-ibridges) tool for connecting to Yoda and iRODS instances. Implies `src_galaxy_bootstrap`, and adds iBridges to the list of tools to be installed automatically.
-* `src_galaxy_jobs_docker`: Boolean. Enables Galaxy support for running jobs in Docker containers. Any jobs that *can* be run in a docker container will be---jobs that cannot will be run in the default manner (in a `conda` env). Runnings jobs in a container may be slower than running them locally, so consider turning this feature off if not needed.
-* `src_galaxy_interactive_tools`: if `true` (default), support for [interactive tools](https://docs.galaxyproject.org/en/master/admin/special_topics/interactivetools.html) is enabled. **Note**: this implies *src_galaxy_jobs_docker*, and the accompanying performance hits.
+* `src_galaxy_jobs_default`: String. What runner to use for jobs by default. Valid values: `singularity`, `docker`, `local`.
+* `src_galaxy_interactive_tools`: if `true` (default), support for [interactive tools](https://docs.galaxyproject.org/en/master/admin/special_topics/interactivetools.html) is enabled.
 * `src_galaxy_co_admin_group`: String group corresponding to an SRAM group. Members of this SRAM group will be made Galaxy admin users.
 * `src_galaxy_bootstrap`: if `true` (default), will attempt to install workflows, dataproviders and tools as configured by the following options:
     * `src_galaxy_tool_files`: String of comma-separated paths to YAML files (in this repo) containing tool specifications.
