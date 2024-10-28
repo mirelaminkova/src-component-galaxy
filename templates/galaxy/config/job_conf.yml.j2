@@ -8,8 +8,11 @@ execution:
   environments:
     local:
       runner: local
-
-    docker:
+      env:
+        - name: PATH
+          action: prepend_to
+          value: /srv/galaxy/datadir/shed_tools:$PATH
+    docker_local:
       runner: local
       docker_enabled: true
       docker_set_user:
