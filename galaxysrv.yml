@@ -39,7 +39,9 @@
     - role: galaxyproject.galaxy
       vars:
         galaxy_config: "{{ _galaxy_config }}"
-  
+    - role: galaxyproject.miniconda
+      become: true
+      become_user: "{{ galaxy_user }}"  
   tasks:
 
     - name: Copy default tool config

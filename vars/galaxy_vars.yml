@@ -18,6 +18,9 @@ galaxy_group: galaxy
 galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
 galaxy_backup_configfiles: false
+miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
+miniconda_version: 23.9
+miniconda_channels: ['conda-forge', 'defaults']
 
 # Defining the variables for galaxy/config
 user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
