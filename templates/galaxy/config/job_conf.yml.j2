@@ -26,7 +26,7 @@ execution:
 {% endif %}
 
     singularity:
-      singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw,/cvmfs"
+      singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw,/cvmfs:ro"
       runner: local_runner
       singularity_enabled: true
       container_resolvers:
