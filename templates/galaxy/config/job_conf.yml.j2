@@ -4,7 +4,7 @@ runners:
     workers: 4
 
 execution:
-  default: {{ _galaxy_default_dispatcher if _galaxy_use_interactive_tools else _galaxy_jobs_default }}
+  default: singularity
   environments:
     local:
       runner: local
