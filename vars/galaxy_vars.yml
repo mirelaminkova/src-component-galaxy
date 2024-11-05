@@ -90,7 +90,11 @@ galaxy_job_config:
 # Galaxy configuration section
 galaxy_configuration:
   galaxy:
-    brand: "SURF Research Cloud"
+    brand: "SURF Research Cloud 🏄‍"
+    logo_src: "https://www.ictopen.nl/sites/ict_open/files/styles/max_1300x1300/public/media-images/Logo%20SURF%20groot_0.png?itok=7aw8DXCZ"
+    themes_config_file: "{{ galaxy_config_dir }}/themes.yml"
+    support_url: "https://servicedesk.surf.nl/jira/plugins/servlet/samlsso?redirectTo=%2Fsecure%2FMyJiraHome.jspa"
+    terms_url: "https://www.surf.nl/en/surf-legal-framework-of-standards-cloud-services"
     use_remote_user: true
     allow_user_creation: true
     allow_user_deletion: true
@@ -142,3 +146,8 @@ galaxy_configuration:
 # galaxy_config_templates:
 #   - src: templates/galaxy/config/dependency_resolvers_conf.xml
 #     dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
+
+
+galaxy_config_files:
+  - src: templates/themes.yml
+    dest: "{{ galaxy_config.galaxy.themes_config_file }}"
