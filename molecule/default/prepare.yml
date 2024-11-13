@@ -12,14 +12,3 @@
         name: ansible
         version: 9.4.0
         state: present
-
-- name: Run nginx component
-  ansible.builtin.import_playbook: ../../plugin-nginx/plugin-nginx.yml
-  vars:
-    rsc_nginx_authorization_endpoint: http://localhost
-    rsc_nginx_user_info_endpoint: http://localhost
-    rsc_nginx_service_url: localhost
-    nginx_enable_ssl: false
-    nginx_enable_auth: true
-    rsc_nginx_oauth2_application:
-      client_id: foo
