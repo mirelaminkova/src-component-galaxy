@@ -78,6 +78,10 @@ galaxy_configuration:
     tool_data_table_config_path: "{{ _galaxy_enable_cvmfs | ternary((cvmfs_tool_data_tables | join(',')), omit) }}"
     dependency_resolvers_config_file: "{{ dependency_resolvers_config_file }}"
     container_resolvers_config_file: "{{ container_resolvers_config_file }}"
+    expose_dataset_path: true
+    expose_potentially_sensitive_job_metrics: true
+    expose_user_name: true
+    # Celery support
     enable_celery_tasks: true
     amqp_internal_connection: "sqlalchemy+postgresql:///galaxy?host=/var/run/postgresql"
     celery_conf:
