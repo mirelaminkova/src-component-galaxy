@@ -1,0 +1,14 @@
+lightblue:
+  masthead:
+    color: "#384E77"
+    text:
+      color: white
+      hover: "#E6F9AF"
+      active: white
+    link:
+      color: transparent
+      hover: transparent
+      active: "#18314F"
+    logo:
+      img: "https://login.surf.nl/adfs/portal/logo/logo.png?id=027A75CEF032E16E649409E1B18EA839A710FBA9C2CC97E66DC08664057660F7"
+

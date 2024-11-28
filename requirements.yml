@@ -15,6 +15,8 @@ roles:
     version: 0.0.1
   - src: galaxyproject.cvmfs
     version: 0.2.21
+  - src: galaxyproject.miniconda
+    version: 0.3.1
 collections:
   - name: community.general
   - name: community.postgresql
