@@ -1,12 +1,16 @@
 # Galaxy Server on SURF ResearchCloud
 
-This repo provides the Ansible playbook for a [Galaxy](https://galaxyproject.org/) server component on SURF ResearchCloud (SRC).
+This repo provides the Ansible playbook for a [Galaxy](https://galaxyproject.org/) server component on SURF ResearchCloud (SRC) 🏄‍♀️.
 
 Also see the [official Galaxy training manual for SRC](https://training.galaxyproject.org/training-material/topics/admin/tutorials/surf-research-cloud-galaxy/tutorial.html).
 
 ### Prerequisites
 
 * Assumes Nginx is already installed on the workspace via the SURF [Nginx component](https://gitlab.com/rsc-surf-nl/plugins/plugin-nginx).
+* The official [Galaxy Ansible role](https://github.com/galaxyproject/ansible-galaxy)
+* The official [Galaxy postgres](https://github.com/galaxyproject/ansible-postgresql) and [postgres_objects](https://github.com/galaxyproject/ansible-postgresql-objects) roles for database management
+* The official [Galaxy CVMFS role](https://training.galaxyproject.org/training-material/topics/admin/tutorials/cvmfs/tutorial.html) and [Apptainer](https://training.galaxyproject.org/training-material/topics/admin/tutorials/apptainer/tutorial.html) provided by the Galaxy community
+* Assumes Nginx is already installed on the workspace (via the SURF Nginx component)
  
 ## Overview
 
@@ -28,6 +32,8 @@ Any members of the workspace's Collaborative Organisation (CO) will be able to a
 
 Galaxy is configured such that members of the CO that are in the SRAM workspace admin group (`src_co_admin`) will be Galaxy administrator when logging in via SSH (`sudo` will require entering the user's SRAM TOTP). Other users are normal users.
 
+Note: only members of the `src_co_admin` group are given permission to install tools on the Galaxy instance.
+
 ### Logging in via SSH
 
 The Galaxy VM will be accessible via SSH for users in the Collaborative Organization. However, only users in the CO admin group 
@@ -35,6 +41,14 @@ The Galaxy VM will be accessible via SSH for users in the Collaborative Organiza
 
 The Galaxy application listening on localhost will expect a secret key in the request header that Nginx is configured to pass on when reverse proxying; as non-admin users
 on the Galaxy machine won't have access to this secret key, they cannot directly query Galaxy on localhost.
+
+### Connecting to Pulsar 
+
+A Galaxy machine can be connected to Pulsar inside the SRC, following the [SRC component Pulsar](https://github.com/ErasmusMC-Bioinformatics/src-component-pulsar) instructions. 
+
+### Usability of external storage
+
+If you attach additional networked storage to the workspace, you can set `src_galaxy_storage_path` to a path on that storage volume. If your storage is e.g. called "galaxy storage", set the parameter to: `/data/galaxy_storage/datadir`. In theory, this should allow you to re-use datasets, tools, etc. from previous Galaxy workspaces.
 
 ## ResearchCloud parameters
 
