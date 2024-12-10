@@ -28,7 +28,11 @@ Any members of the workspace's Collaborative Organisation (CO) will be able to a
 Galaxy is configured such that members of the CO that are in the SRAM workspace admin group (`src_co_admin`) will be Galaxy administrators. Other users are normal users. 
 Note: only members of the `src_co_admin` group are given permission to install tools on the Galaxy instance.
 
-### ResearchCloud parameters
+### Connecting to Pulsar 
+
+A Galaxy machine can be connected to Pulsar inside the SRC, following the [SRC component Pulsar](https://github.com/ErasmusMC-Bioinformatics/src-component-pulsar) instructions. 
+
+### ResearchCloud parameters 🏄‍♀️
 
 The component takes the following parameters:
 
@@ -45,10 +49,7 @@ The component takes the following parameters:
     * `src_galaxy_custom_repo_branch`: **Interactive parameter**. String branch of the custom repo to be used.
 * `src_galaxy_storage_path`: **Interactive parameter**. Default: `/srv/galaxy/datadir`. Path where Galaxy's "mutable data directory" will be located, including the following files:
 
-### Connecting to Pulsar 
 
-A Galaxy machine can be connected to Pulsar inside the SRC, following the [SRC component Pulsar](https://github.com/ErasmusMC-Bioinformatics/src-component-pulsar) instructions. 
-
-
+### Usability of external storage
 If you attach additional networked storage to the workspace, you can set `src_galaxy_storage_path` to a path on that storage volume. If your storage is e.g. called "galaxy storage", set the parameter to: `/data/galaxy_storage/datadir`. In theory, this should allow you to re-use datasets, tools, etc. from previous Galaxy workspaces.
 
