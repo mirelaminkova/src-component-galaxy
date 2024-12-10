@@ -18,6 +18,9 @@ galaxy_group: galaxy
 galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
 galaxy_backup_configfiles: false
+miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
+miniconda_version: 23.9
+miniconda_channels: ['conda-forge', 'defaults']
 
 # Defining the variables for galaxy/config
 user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
@@ -87,7 +90,11 @@ galaxy_job_config:
 # Galaxy configuration section
 galaxy_configuration:
   galaxy:
-    brand: "SURF Research Cloud"
+    brand: "SURF Research Cloud 🏄‍"
+    logo_src: "https://www.ictopen.nl/sites/ict_open/files/styles/max_1300x1300/public/media-images/Logo%20SURF%20groot_0.png?itok=7aw8DXCZ"
+    themes_config_file: "{{ galaxy_config_dir }}/themes.yml"
+    support_url: "https://servicedesk.surf.nl/jira/plugins/servlet/samlsso?redirectTo=%2Fsecure%2FMyJiraHome.jspa"
+    terms_url: "https://www.surf.nl/en/surf-legal-framework-of-standards-cloud-services"
     use_remote_user: true
     allow_user_creation: true
     allow_user_deletion: true
@@ -106,6 +113,18 @@ galaxy_configuration:
     tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
     dependency_resolvers_config_file: "{{ dependency_resolvers_config_file }}"
     container_resolvers_config_file: "{{ container_resolvers_config_file }}"
+    expose_dataset_path: true
+    expose_potentially_sensitive_job_metrics: true
+    expose_user_name: true
+    # Celery support
+    enable_celery_tasks: true
+    amqp_internal_connection: "sqlalchemy+postgresql:///galaxy?host=/var/run/postgresql"
+    celery_conf:
+      broker_url: null
+      result_backend: "db+postgresql:///galaxy?host=/var/run/postgresql"
+      task_routes:
+        galaxy.fetch_data: galaxy.external
+        galaxy.set_job_metadata: galaxy.external
 
   gravity:
     galaxy_root: "{{ galaxy_server_dir }}"
@@ -139,3 +158,8 @@ galaxy_configuration:
 # galaxy_config_templates:
 #   - src: templates/galaxy/config/dependency_resolvers_conf.xml
 #     dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
+
+
+galaxy_config_files:
+  - src: templates/themes.yml
+    dest: "{{ galaxy_config.galaxy.themes_config_file }}"

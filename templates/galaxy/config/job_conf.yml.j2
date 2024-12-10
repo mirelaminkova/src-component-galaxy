@@ -4,7 +4,7 @@ runners:
     workers: 4
 
 execution:
-  default: docker_dispatch
+  default: singularity
   environments:
     local:
       runner: local
@@ -18,15 +18,16 @@ execution:
       docker_set_user:
       docker_sudo: false
 
-    docker_dispatch:
+{% if _galaxy_use_interactive_tools %}
+    {{ _galaxy_default_dispatcher }}:
       runner: dynamic
-      type: docker_dispatch
-      docker_destination_id: docker_local
-      default_destination_id: local
+      type: python
+      function: {{ _galaxy_default_dispatcher }}
+{% endif %}
 
     singularity:
-      singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw"
-      runner: local_runner
+      singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw,/cvmfs:ro"
+      runner: local
       singularity_enabled: true
       container_resolvers:
         - type: cached_explicit_singularity
@@ -52,4 +53,4 @@ execution:
 
 tools:
   - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
-    environment: local_env
+    environment: local
