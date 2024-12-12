@@ -25,8 +25,9 @@
         state: present
 
   roles:
-    - galaxyproject.cvmfs
-    - usegalaxy_eu.apptainer
+    - role: galaxyproject.cvmfs
+      when: not _molecule_active
+    - role: usegalaxy_eu.apptainer
     - role: geerlingguy.docker
       when: not _molecule_active and _galaxy_jobs_docker
     - role: uusrc.general.nginx_reverse_proxy
