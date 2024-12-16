@@ -1,0 +1,9 @@
+---
+
+- name: Add custom 502 page
+  ansible.builtin.copy:
+    src: nginx/error502.html
+    dest: "{{ _galaxy_error_502 }}"
+    owner: www-data
+    group: www-data
+    mode: "0740"

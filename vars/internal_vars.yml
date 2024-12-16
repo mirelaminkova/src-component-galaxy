@@ -17,6 +17,7 @@ _galaxy_custom_repo_workflow_location: 'workflows'
 _galaxy_root: /srv/galaxy
 
 _galaxy_local_address: localhost:8080
+_galaxy_error_502: /var/www/galaxy500.html
 
 galaxy_src_documentation: https://github.com/UtrechtUniversity/vre-docs
 

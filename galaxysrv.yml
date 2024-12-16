@@ -24,6 +24,9 @@
           - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
+    - name: Additional nginx config
+      ansible.builtin.include_tasks: tasks/nginx.yml
+
   roles:
     - role: geerlingguy.docker
       when: not _molecule_active and _galaxy_enable_docker
