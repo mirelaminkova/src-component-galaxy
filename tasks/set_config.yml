@@ -34,6 +34,11 @@
   ansible.builtin.set_fact:
     _galaxy_bootstrap_api_key: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=50) }}"
 
+- name: Generate a remote user secret
+  when: not _molecule_idempotence
+  ansible.builtin.set_fact:
+    _galaxy_remote_user_secret: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=50) }}"
+
 - name: Load nginx variables
   ansible.builtin.include_vars: vars/nginx_vars.yml
 

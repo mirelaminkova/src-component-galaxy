@@ -3,6 +3,8 @@ galaxy_nginx_vhost_config:
     location: /
     proxy_pass: "http://{{ _galaxy_local_address }}"
     auth: "{{ _molecule_active | ternary(omit, 'sram') }}"
+    proxy_headers:
+      REMOTE_USER_SECRET: "{{ _galaxy_remote_user_secret | default(omit) }}"
   - name: api
     location: /api/
     proxy_pass: "http://{{ _galaxy_local_address }}/api/"

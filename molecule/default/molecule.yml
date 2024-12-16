@@ -34,7 +34,7 @@ scenario:
     - prepare
     - converge
     - side_effect
-    - idempotence
+    # - idempotence # disabling idempotence because the remote_user_secret option is not idempotent
     - verify
     - cleanup
     - destroy

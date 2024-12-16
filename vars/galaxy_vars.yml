@@ -38,6 +38,7 @@ galaxy_configuration:
     allow_user_deletion: true
     admin_users: "{{ _galaxy_admins }}"
     remote_user_maildomain: "{{ _galaxy_remote_user_maildomain }}"
+    remote_user_secret: "{{ _galaxy_remote_user_secret }}"
     database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
     job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
