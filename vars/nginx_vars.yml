@@ -7,6 +7,13 @@ galaxy_nginx_vhost_config:
     auth: "{{ _molecule_active | ternary(omit, 'sram') }}"
     proxy_set_header:
       GX_SECRET: "{{ _galaxy_remote_user_secret | default(omit) }}"
+    gzip: 'on'
+    gzip_http_version: 1.1
+    gzip_vary: 'on'
+    gzip_comp_level: 6
+    gzip_proxied: any
+    gzip_types: text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript
+    gzip_buffers: 16 8k
   - name: api
     location: /api/
     proxy_pass: http://{{ _galaxy_local_address }}/api/
@@ -33,3 +40,21 @@ galaxy_nginx_vhost_config:
     location: = /galaxy502.html
     root: "{{ _galaxy_error_502 | dirname }}"
     internal: ""
+  - name: x_accel_redirect
+    location: /_x_accel_redirect/
+    internal: ""
+    alias: /
+    add_header: 'Access-Control-Allow-Origin $upstream_http_access_control_allow_origin'
+    add_header: 'Access-Control-Allow-Methods $upstream_http_access_control_allow_methods'
+  - name: tus
+    location: '/api/upload/resumable_upload'
+    proxy_request_buffering: 'off'
+    proxy_buffering: 'off'
+    proxy_http_version: '1.1'
+    set_headers:
+      X-Forwarded-Host: '$host'
+      X-Forwarded-Proto: '$scheme'
+      Upgrade: '$http_upgrade'
+      Connection: 'Upgrade'
+      client_max_body_size: '0'
+      proxy_pass: http://localhost:{{ tusd_port }}/files;

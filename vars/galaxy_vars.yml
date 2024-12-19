@@ -48,6 +48,7 @@ galaxy_configuration:
     galaxy_infrastructure_url: "{{ _galaxy_local_address }}"
     outputs_to_working_directory: "{{ _galaxy_use_interactive_tools }}"
     bootstrap_admin_api_key: "{{ _galaxy_bootstrap_api_key | default(omit) }}"
+    nginx_x_accel_redirect_base: '/_x_accel_redirect'
   gravity:
     galaxy_root: "{{ galaxy_server_dir }}"
     galaxy_user: "{{ galaxy_user }}"
