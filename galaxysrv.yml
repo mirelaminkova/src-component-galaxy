@@ -3,7 +3,6 @@
   hosts: "{{ lookup('env', 'variable_host') | default('localhost', true) }}" # workaround because SRC needs localhost, but molecule needs specifc hostvars
 
   pre_tasks:
-
     - name: Set workspace user facts
       ansible.builtin.include_role:
         name: uusrc.general.fact_regular_users
@@ -15,13 +14,13 @@
       ansible.builtin.apt:
         update_cache: true
         name:
-          - 'git'
-          - 'python3-psycopg2'
-          - 'python3-virtualenv'
-          - 'python3-dev'
-          - 'gcc'
-          - 'acl'
-          - 'gnutls-bin' # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
+          - "git"
+          - "python3-psycopg2"
+          - "python3-virtualenv"
+          - "python3-dev"
+          - "gcc"
+          - "acl"
+          - "gnutls-bin" # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
     - name: Additional nginx config
@@ -40,9 +39,8 @@
     - role: galaxyproject.galaxy
       vars:
         galaxy_config: "{{ _galaxy_config }}"
-  
-  tasks:
 
+  tasks:
     - name: Copy default tool config
       tags: molecule-idempotence-notest
       ansible.builtin.copy:
@@ -52,7 +50,7 @@
         owner: "{{ galaxy_privsep_user }}"
         group: "{{ galaxy_user }}"
         mode: "644"
-  
+
     - name: Enable interactive tools
       ansible.builtin.include_tasks: tasks/interactive_tools.yml
       when: _galaxy_use_interactive_tools
@@ -75,7 +73,7 @@
     - name: Populate service facts
       ansible.builtin.service_facts:
 
-    # This is to ensure that the co admin group can use passwordless sudo on the machine, 
+    # This is to ensure that the co admin group can use passwordless sudo on the machine,
     # allowing us to disable the ResearchCloud co_passwordless_sudo parameter,
     # which grants passwordless sudo to *all* CO users on the machine.
     - name: Add admin group to sudoers
@@ -90,8 +88,7 @@
       when: "ansible_facts.services['galaxy-gunicorn.service'] is not defined or ansible_facts.services['galaxy-gunicorn.service']['state'] != 'running' or _galaxy_do_bootstrap"
       block:
         - name: Galaxy gravity graceful
-          command: "/usr/local/bin/galaxyctl graceful"
-
+          ansible.builtin.command: "/usr/local/bin/galaxyctl graceful"
         - name: Enable galaxy service
           ansible.builtin.systemd_service:
             name: galaxy.target
@@ -99,21 +96,19 @@
             state: started
 
         - name: Include tasks to bootstrap the instance
-          when: _galaxy_do_bootstrap 
+          when: _galaxy_do_bootstrap
           ansible.builtin.include_tasks: tasks/bootstrap.yml
-        
-      always:
 
+      always:
         - name: Remove bootstrap API key from Galaxy config
           when: _galaxy_bootstrap_api_key is defined
           ansible.builtin.lineinfile:
             path: "{{ galaxy_config_dir }}/galaxy.yml"
-            regexp: '.*bootstrap_admin_api_key:'
+            regexp: ".*bootstrap_admin_api_key:"
             state: absent
           notify: galaxy gravity restart
 
   handlers:
-
     - name: Restart nginx
       ansible.builtin.service:
         name: nginx
@@ -121,6 +116,6 @@
       listen: restart nginx
 
     - name: Galaxy gravity restart
-      command: "/usr/local/bin/galaxyctl graceful"
+      ansible.builtin.command: "/usr/local/bin/galaxyctl graceful"
       listen: "restart galaxy"
       when: _galaxy_already_started is not defined
