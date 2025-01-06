@@ -3,7 +3,7 @@ roles:
   - src: https://github.com/galaxyproject/ansible-galaxy.git
     name: galaxyproject.galaxy
     version: 08974b18e2aad1e5569854e5d6c8b5c966bf55e4
-  - src: https://github.com/dometto/ansible-galaxy-tools.git
+  - src: https://github.com/utrechtuniversity/ansible-galaxy-tools.git
     name: galaxyproject.galaxy-tools
   - src: galaxyproject.postgresql
     version: 1.1.2
@@ -11,10 +11,13 @@ roles:
     version: 1.2.0
   - src: geerlingguy.docker
     version: 6.1.0
+  - name: galaxyproject.tusd
+    src: https://github.com/galaxyproject/ansible-role-tusd.git
+    version: e009b498a7989d8002c6a5d104176295d63e9fae
 
 collections:
   - name: community.general
   - name: community.postgresql
-  - name: https://github.com/UtrechtUniversity/researchcloud-items.git
+  - name: https://github.com/UtrechtUniversity/researchcloud-items.git # uusrc.general
     type: git
-    version: 02dab70feb046030e46e55886c2afa8ae7982c08
+    version: 801c6d2cb21677ef3926c4172cd6c79e48004b62
