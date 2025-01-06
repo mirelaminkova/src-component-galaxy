@@ -44,17 +44,18 @@ galaxy_nginx_vhost_config:
     location: /_x_accel_redirect/
     internal: ""
     alias: /
-    add_header: 'Access-Control-Allow-Origin $upstream_http_access_control_allow_origin'
-    add_header: 'Access-Control-Allow-Methods $upstream_http_access_control_allow_methods'
+    add_headers:
+      Access-Control-Allow-Origin: $upstream_http_access_control_allow_origin
+      Access-Control-Allow-Methods: $upstream_http_access_control_allow_methods
   - name: tus
     location: '/api/upload/resumable_upload'
     proxy_request_buffering: 'off'
     proxy_buffering: 'off'
     proxy_http_version: '1.1'
-    set_headers:
+    proxy_pass: http://localhost:{{ galaxy_tusd_port }}/files
+    proxy_set_header:
       X-Forwarded-Host: '$host'
       X-Forwarded-Proto: '$scheme'
       Upgrade: '$http_upgrade'
       Connection: 'Upgrade'
       client_max_body_size: '0'
-      proxy_pass: http://localhost:{{ tusd_port }}/files;

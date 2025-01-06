@@ -16,8 +16,14 @@ This repo provides the Ansible playbook for a [Galaxy](https://galaxyproject.org
 * Postgres is installed on the same host as Galaxy
 * Galaxy is started the first time via `/usr/local/bin/galaxyctl start`. After that, it can be managed using `systemctl`, e.g. with `systemctl status galaxy.target`.
 * An Nginx reverse proxy is started serving the Galaxy application on `https://<workspace_fqdn>`, providing SRAM authentication (see below).
+<<<<<<< HEAD
 
 **Note: when starting the workspace, the webserver comes up before the Galaxy application has fully started. This may result in an '502 Bad Gateway' error displayed in your browser.** If this happens, just try again a minute or two later! (Todo is to give a more useful error message to the user).
+=======
+  * Nginx proxies port 443 to localhost:8080
+* If `src_galaxy_interactive_tools` is enabled, the [gx-it-proxy](https://github.com/galaxyproject/gx-it-proxy) application is started on port `8001`.
+* If `src_galaxy_enable_tus`, [`tusd`](https://training.galaxyproject.org/training-material/topics/admin/tutorials/tus/tutorial.html) is started on port `8002`.
+>>>>>>> 179eaa5 (Change tusd gx-it-proxy ports.)
 
 ### Authentication
 
@@ -46,3 +52,43 @@ The component takes the following parameters:
 
 If you attach additional networked storage to the workspace, you can set `src_galaxy_storage_path` to a path on that storage volume. If your storage is e.g. called "galaxy storage", set the parameter to: `/data/galaxy_storage/datadir`. In theory, this should allow you to re-use datasets, tools, etc. from previous Galaxy workspaces.
 
+### Bootstrapping
+
+The `src_galaxy_bootstrap` parameter determines whether the Galaxy instance should be bootstrapped: that is, whether various tools, workflows, and datamanagers should be installed.
+These can be installed from various sources:
+
+* a git repo containing `.yml` files descibing which tools to install, and `.ga` workflows files
+  * example repo here
+  * put tool files in the `tools` subdirectory (as defined by the `_galaxy_custom_repo_tool_location` internal variable).
+  * put workflow files in the `workflows` subdirectory (as defined by the `_galaxy_custom_repo_workflow_location` internal variable).
+  * use `src_galaxy_custom_repo` and `src_galaxy_custom_repo_branch` to define your repository.
+* any number of `.yml` tool files found in this repository
+  * use `src_galaxy_tool_files` to provide these. For instance, you may set this parameter to `tools/ibridges.yml,tools/foo.yml` to install the tools defined in those locations.
+  * see [here](tools/ibridges.yml) for an example
+* any number of `.ga` workflow files found in this repository
+  * use `src_galaxy_workflow_files` to provide these. For instance, you may set this parameter to `tools/bar.ga` to install that workflow.
+
+By customizing the `src_galaxy_custom_repo`, `src_galaxy_tool_files` and `src_galaxy_workflow_files` parameters, you can thus create different 'flavours' for your Galaxy Catalog Item
+that each contain different tools and workflows out of the box.
+
+__Note__: workflow files installed using the bootstrapping procedure will be installed as `public` workflows available to all users on the Galaxy instance!
+You can find these under `Data > Workflows` in Galaxy's main menu.
+
+### Bootstrapping: how does it work?
+
+If boostrapping is enabled, this Ansible playbook will:
+
+1. Configure Galaxy to use a bootstrapping API key in `galaxy.conf`.
+1. Restart Galaxy.
+
+...and then invoke the [ansible-galaxy-tools role](https://github.com/UtrechtUniversity/ansible-galaxy-tools/) to do the following:
+
+1. Use the bootstrapping API key to import tools.
+1. Use the bootstrapping API key to create an admin user.
+  * Use an API key belonging to the admin user to import workflows.
+
+If needed Galaxy, is restarted. Finally, the playbook will __always__ remove the bootstrapping API key. 
+
+## Maintenance
+
+You can stop/restart Galaxy using systemctl, e.g.: `<sudo> systemctl restart galaxy.target`. Use e.g. `<sudo> galaxyctl follow` to follow the logs of all Galaxy services.

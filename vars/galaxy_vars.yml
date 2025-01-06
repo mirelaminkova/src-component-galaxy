@@ -9,6 +9,8 @@ galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
 galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_galaxy_root + '/datadir', true) }}" # component variable src_galaxy_storage_path
 galaxy_commit_id: release_{{ src_galaxy_version | default('24.1', true) }} # component variable src_galaxy_version
+galaxy_tusd_port: 8002
+galaxy_tus_upload_store: "{{ galaxy_mutable_data_dir }}/tus_data"
 galaxy_separate_privileges: true
 galaxy_create_user: true
 galaxy_manage_paths: true
@@ -46,6 +48,7 @@ galaxy_configuration:
     interactivetools_enable: "{{ _galaxy_use_interactive_tools }}"
     interactivetools_map: "{{ _galaxy_use_interactive_tools | ternary(gie_proxy_sessions_path, omit) }}"
     galaxy_infrastructure_url: "{{ _galaxy_local_address }}"
+    galaxy_tus_upload_store: "{{ galaxy_tus_upload_store }}"
     outputs_to_working_directory: "{{ _galaxy_use_interactive_tools }}"
     bootstrap_admin_api_key: "{{ _galaxy_bootstrap_api_key | default(omit) }}"
     nginx_x_accel_redirect_base: '/_x_accel_redirect'
@@ -77,3 +80,8 @@ galaxy_configuration:
     gx_it_proxy:
       enable: "{{ _galaxy_use_interactive_tools }}"
       port: "{{ gie_proxy_port }}"
+    tusd:
+      enable: "{{ _galaxy_enable_tus }}"
+      tusd_path: /usr/local/sbin/tusd
+      upload_dir: "{{ galaxy_tus_upload_store }}"
+      port: "{{ galaxy_tusd_port }}"

@@ -15,6 +15,8 @@ _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, 
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
 _galaxy_jobs_default: "{{ src_galaxy_jobs_default | default('local', true) }}"
 _galaxy_enable_docker: "{{ _galaxy_use_interactive_tools or (_galaxy_jobs_default == 'docker') }}"
+_galaxy_enable_tus: "{{ src_galaxy_enable_tus | default(true, true) | bool }}"
+_galaxy_external_url: "https://{{ workspace_fqdn }}"
 
 # Build the final lists of tool and workflow installation files
 

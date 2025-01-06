@@ -39,6 +39,8 @@
     - role: galaxyproject.galaxy
       vars:
         galaxy_config: "{{ _galaxy_config }}"
+    - role: galaxyproject.tusd
+      when: _galaxy_enable_tus
 
   tasks:
 
@@ -83,10 +85,10 @@
     - name: Populate service facts
       ansible.builtin.service_facts:
 
-    # This is to ensure that the co admin group can use passwordless sudo on the machine,
+    # This is to ensure that the Collaborative Organisation admin group can use passwordless sudo on the machine,
     # allowing us to disable the ResearchCloud co_passwordless_sudo parameter,
     # which grants passwordless sudo to *all* CO users on the machine.
-    - name: Add admin group to sudoers
+    - name: Add CO admin group to sudoers
       ansible.builtin.copy:
         dest: /etc/sudoers.d/co_admins
         owner: "root"

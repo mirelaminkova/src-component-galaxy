@@ -2,4 +2,4 @@
 gie_proxy_dir: "{{ _galaxy_root }}/gie-proxy/proxy"
 gie_proxy_sessions_path: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
 gie_proxy_path_prefix: /interactivetool/ep
-gie_proxy_port: 4002
+gie_proxy_port: 8001
