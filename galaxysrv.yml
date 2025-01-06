@@ -75,6 +75,17 @@
     - name: Populate service facts
       ansible.builtin.service_facts:
 
+    # This is to ensure that the co admin group can use passwordless sudo on the machine, 
+    # allowing us to disable the ResearchCloud co_passwordless_sudo parameter,
+    # which grants passwordless sudo to *all* CO users on the machine.
+    - name: Add admin group to sudoers
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/co_admins
+        owner: "root"
+        group: "root"
+        mode: "0644"
+        content: "%{{ _galaxy_admin_co_group }} ALL=(ALL) NOPASSWD: ALL"
+
     - name: Enable the server and bootstrap
       when: "ansible_facts.services['galaxy-gunicorn.service'] is not defined or ansible_facts.services['galaxy-gunicorn.service']['state'] != 'running' or _galaxy_do_bootstrap"
       block:
@@ -90,7 +101,7 @@
         - name: Include tasks to bootstrap the instance
           when: _galaxy_do_bootstrap 
           ansible.builtin.include_tasks: tasks/bootstrap.yml
-
+        
       always:
 
         - name: Remove bootstrap API key from Galaxy config
