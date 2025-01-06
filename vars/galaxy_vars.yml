@@ -8,7 +8,7 @@ galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
 galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_galaxy_root + '/datadir', true) }}" # component variable src_galaxy_storage_path
-galaxy_commit_id: release_{{ src_galaxy_version | default('23.2', true) }} # component variable src_galaxy_version
+galaxy_commit_id: release_{{ src_galaxy_version | default('24.1', true) }} # component variable src_galaxy_version
 galaxy_separate_privileges: true
 galaxy_create_user: true
 galaxy_manage_paths: true
