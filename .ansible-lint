@@ -1,0 +1,9 @@
+---
+profile: production
+exclude_paths:
+  - docs
+  - .github
+  - molecule/
+skip_list:
+  - role-name
+  - var-naming

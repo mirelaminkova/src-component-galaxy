@@ -1,21 +1,22 @@
 ---
 - name: Add interactive tool proxy conf for nginx
   ansible.builtin.template:
-    src: "templates/nginx/galaxy-gie-proxy.j2"
-    dest: "/etc/nginx/conf.d/gie-server.conf"
+    src: templates/nginx/galaxy-gie-proxy.j2
+    dest: /etc/nginx/conf.d/gie-server.conf
     mode: "0640"
-    owner: "www-data"
-    group: "www-data"
+    owner: www-data
+    group: www-data
   notify: restart nginx
 
 - name: Remove comment to activate default interactive tools
   # match [\d\D\n] to match digits, non-digits, and newlines -- this is because .* does not match newlines in ansible.builtin.replace
   ansible.builtin.replace:
     path: "{{ galaxy_config_dir }}/tool_conf.xml"
-    regexp: '\s*<!--\s*\n.*(<section id="interactivetools" name="Interactive tools">[\d\D\n]*</section>)\n\s*-->'
-    replace: '\n  \1'
+    regexp: \s*<!--\s*\n.*(<section id="interactivetools" name="Interactive tools">[\d\D\n]*</section>)\n\s*-->
+    replace: \n  \1
 
 - name: Copy script to dynamically determine if a job should use Docker
   ansible.builtin.template:
     src: default_dispatch.py.j2
     dest: "{{ galaxy_server_dir }}/lib/galaxy/jobs/rules/{{ _galaxy_default_dispatcher }}.py"
+    mode: "0755"

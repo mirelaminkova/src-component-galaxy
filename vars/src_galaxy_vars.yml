@@ -1,6 +1,7 @@
+---
 # Variables derived from component parameters in ResearchCLoud
 
-_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool ) }}"
+_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool) }}"
 _galaxy_ibridges_enabled: "{{ src_ibridges | default(true, true) | bool }}"
 _galaxy_default_tool_files:
   - path: tools/ibridges.yml
@@ -13,10 +14,12 @@ _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
 _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, true) | bool }}"
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
 _galaxy_jobs_default: "{{ src_galaxy_jobs_default | default('local', true) }}"
-_galaxy_enable_docker: "{{ _galaxy_use_interactive_tools or (_galaxy_jobs_default == 'docker' )  }}"
+_galaxy_enable_docker: "{{ _galaxy_use_interactive_tools or (_galaxy_jobs_default == 'docker') }}"
 
 # Build the final lists of tool and workflow installation files
-_galaxy_tool_files: "{{ src_galaxy_tool_files | default('', true) | split(',') | select() + _galaxy_default_tool_files_list }}"  # select() necessary because split on the default '' yields ['']
+
+# select() necessary because split on the default '' yields ['']
+_galaxy_tool_files: "{{ src_galaxy_tool_files | default('', true) | split(',') | select() + _galaxy_default_tool_files_list }}"
 _galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',') | select() }}"
 
 # Note that some component parameters are also used in galaxy_vars.yml:

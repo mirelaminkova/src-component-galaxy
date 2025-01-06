@@ -1,5 +1,4 @@
 ---
-
 - name: Add custom 502 page
   ansible.builtin.copy:
     src: nginx/error502.html

@@ -1,16 +1,15 @@
 ---
 - name: Wait for galaxy server to come up
   ansible.builtin.uri:
-    url: "http://{{ _galaxy_local_address }}/api/version"
+    url: http://{{ _galaxy_local_address }}/api/version
   register: galaxy_service_live
-  until: "galaxy_service_live.status == 200"
+  until: galaxy_service_live.status == 200
   retries: 30
   delay: 10 # check every 10 seconds for a maximum of 5 minutes
 
 - name: Get user defined tools and workflows from a custom git repo
   when: _galaxy_custom_repo | length > 0
   block:
-
     - name: Clone the git repo
       ansible.builtin.git:
         repo: "{{ _galaxy_custom_repo }}"
@@ -23,29 +22,29 @@
       ansible.builtin.find:
         paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_tool_location }}"
         file_type: file
-        patterns: ['*.yml', '*.yaml']
+        patterns: ["*.yml", "*.yaml"]
       register: _galaxy_custom_repo_tool_files
 
     - name: Set custom tool files array
-      set_fact:
+      ansible.builtin.set_fact:
         _galaxy_custom_tool_files: "{{ _galaxy_custom_repo_tool_files['files'] | map(attribute='path') | list | default([]) }}"
 
     - name: Find all workflows in repo
       ansible.builtin.find:
         paths: "{{ _galaxy_custom_repo_clone_dest }}/{{ _galaxy_custom_repo_workflow_location }}"
         file_type: file
-        patterns: ['*.ga']
+        patterns: ["*.ga"]
       register: _galaxy_custom_repo_workflow_files
 
     - name: Set custom workflow files array
-      set_fact:
+      ansible.builtin.set_fact:
         _galaxy_custom_workflow_files: "{{ _galaxy_custom_repo_workflow_files['files'] | map(attribute='path') | list | default([]) }}"
 
 - name: Install tools and workflows
   ansible.builtin.include_role:
     name: galaxyproject.galaxy-tools
   vars:
-    galaxy_tools_base_dir: "/home/{{ galaxy_user }}"
+    galaxy_tools_base_dir: /home/{{ galaxy_user }}
     galaxy_tools_api_key: "{{ _galaxy_config.galaxy.bootstrap_admin_api_key }}"
     galaxy_tools_create_bootstrap_user: true
     galaxy_tools_delete_bootstrap_user: true
@@ -54,6 +53,6 @@
     galaxy_tools_install_workflows: true
     galaxy_tools_galaxy_publish_workflows: true
     galaxy_tools_ignore_errors: false
-    galaxy_tools_galaxy_instance_url: "http://{{ _galaxy_local_address }}"
+    galaxy_tools_galaxy_instance_url: http://{{ _galaxy_local_address }}
     galaxy_tools_tool_list_files: "{{ (_galaxy_tool_files | default([])) + (_galaxy_custom_tool_files | default([])) }}"
     galaxy_tools_workflows: "{{ (_galaxy_workflow_files | default([])) + (_galaxy_custom_workflow_files | default([])) }}"

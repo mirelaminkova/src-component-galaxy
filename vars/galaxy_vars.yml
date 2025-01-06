@@ -1,3 +1,4 @@
+---
 # Variables for the galaxyproject.galaxy role
 galaxy_config_style: yaml
 galaxy_layout: custom
@@ -6,8 +7,8 @@ galaxy_root: "{{ galaxy_server_dir }}" # workaround https://github.com/galaxypro
 galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
-galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_galaxy_root+'/datadir', true) }}" # component variable src_galaxy_storage_path
-galaxy_commit_id: "release_{{ src_galaxy_version | default('23.2', true) }}" # component variable src_galaxy_version
+galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_galaxy_root + '/datadir', true) }}" # component variable src_galaxy_storage_path
+galaxy_commit_id: release_{{ src_galaxy_version | default('23.2', true) }} # component variable src_galaxy_version
 galaxy_separate_privileges: true
 galaxy_create_user: true
 galaxy_manage_paths: true
@@ -27,7 +28,7 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/pulsar_app.yml"
 postgresql_objects_users:
   - name: galaxy
-    password: null
+    password:
 postgresql_objects_databases:
   - name: galaxy
     owner: galaxy
@@ -39,7 +40,7 @@ galaxy_configuration:
     admin_users: "{{ _galaxy_admins }}"
     remote_user_maildomain: "{{ _galaxy_remote_user_maildomain }}"
     remote_user_secret: "{{ _galaxy_remote_user_secret }}"
-    database_connection: "postgresql:///galaxy?host=/var/run/postgresql"
+    database_connection: postgresql:///galaxy?host=/var/run/postgresql
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
     job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
     tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml"
@@ -62,7 +63,7 @@ galaxy_configuration:
       # Other options that will be passed to gunicorn
       # This permits setting of 'secure' headers like REMOTE_USER (and friends)
       # https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips
-      extra_args: '--forwarded-allow-ips="*"'
+      extra_args: --forwarded-allow-ips="*"
       # This lets Gunicorn start Galaxy completely before forking which is faster.
       # https://docs.gunicorn.org/en/stable/settings.html#preload-app
       preload: true

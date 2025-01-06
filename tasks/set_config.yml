@@ -17,17 +17,19 @@
 
 - name: Set admins from CO group
   ansible.builtin.set_fact:
-    _galaxy_admins: "{{ fact_co_groups[_galaxy_admin_co_group] | product(['@' + _galaxy_remote_user_maildomain]) | map('join') | list | join(',') | default('') }}"
+    _galaxy_admins: >-
+      {{ fact_co_groups[_galaxy_admin_co_group] | product(['@' + _galaxy_remote_user_maildomain]) |
+        map('join') | list | join(',') | default('') }}
   when: fact_co_groups[_galaxy_admin_co_group] is defined
 
 - name: Set admins to blank
   ansible.builtin.set_fact:
-    _galaxy_admins: ''
+    _galaxy_admins: ""
   when: fact_co_groups[_galaxy_admin_co_group] is not defined
 
 - name: Determine whether to bootstrap Galaxy
-  set_fact:
-    _galaxy_do_bootstrap:  "{{ _galaxy_bootstrap and _galaxy_tool_files | length + _galaxy_workflow_files | length + _galaxy_custom_repo | length  > 0}}"
+  ansible.builtin.set_fact:
+    _galaxy_do_bootstrap: "{{ _galaxy_bootstrap and _galaxy_tool_files | length + _galaxy_workflow_files | length + _galaxy_custom_repo | length > 0 }}"
 
 - name: Generate a bootstrap key
   when: _galaxy_do_bootstrap and not _molecule_idempotence
