@@ -59,7 +59,7 @@
         dest: "{{ galaxy_config_dir }}/tool_conf.xml"
         owner: "{{ galaxy_privsep_user }}"
         group: "{{ galaxy_user }}"
-        mode: "644"
+        mode: "0644"
 
     - name: Enable interactive tools
       ansible.builtin.include_tasks: tasks/interactive_tools.yml
