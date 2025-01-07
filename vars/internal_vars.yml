@@ -20,6 +20,8 @@ _galaxy_root: /srv/galaxy
 _galaxy_local_address: localhost:8080
 _galaxy_error_502: /var/www/galaxy502.html
 
+_galaxy_infrastructure_url: "{{ _molecule_active | ternary('http://', 'https://') }}{{ workspace_fqdn | default('localhost', true) }}"
+
 galaxy_src_documentation: https://github.com/UtrechtUniversity/vre-docs
 
 _galaxy_default_dispatcher: default_dispatcher # function and file name for the dynamic job handler used by interactive tools
