@@ -1,0 +1,6 @@
+# If dependabot creates an update for a new version of Galaxy:
+# 1. Checkout the PR branch Dependabot has opened for you locally.
+# 2. Update the Galaxy version in `galaxy_vars.yml` to the new version suggested by Dependabot.
+# 3. Push this change to the PR branch,
+# 4. See if the tests succeed.
+galaxy~=24.1
