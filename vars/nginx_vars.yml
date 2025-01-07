@@ -53,9 +53,11 @@ galaxy_nginx_vhost_config:
     proxy_buffering: 'off'
     proxy_http_version: '1.1'
     proxy_pass: http://localhost:{{ galaxy_tusd_port }}/files
+    client_max_body_size: '0'
+    proxy_redirect: 'default' # the nginx_reverse_proxy role sets this to off by default
     proxy_set_header:
+      Host: '' # disable the Host header set by the nginx_reverse_proxy role by default
       X-Forwarded-Host: '$host'
       X-Forwarded-Proto: '$scheme'
       Upgrade: '$http_upgrade'
-      Connection: 'Upgrade'
-      client_max_body_size: '0'
+      Connection: '"upgrade"'
