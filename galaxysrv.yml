@@ -41,6 +41,16 @@
         galaxy_config: "{{ _galaxy_config }}"
 
   tasks:
+
+    - name: Lock down nginx config for www-data # so non-root users cannot read the GX_SECRET
+      ansible.builtin.file:
+        state: directory
+        owner: root
+        group: www-data
+        mode: "0750"
+        path: /etc/nginx/app-location-conf.d
+        recurse: true
+
     - name: Copy default tool config
       tags: molecule-idempotence-notest
       ansible.builtin.copy:
