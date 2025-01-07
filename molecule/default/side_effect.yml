@@ -1,12 +1,23 @@
-- name: Side Effect
+- name: Verify
   hosts: all
   gather_facts: false
 
   tasks:
-    - name: Make sure Galaxy is fully restarted before running idempotence
+    - name: Make sure Galaxy API is up
       ansible.builtin.uri:
         url: "http://localhost:8080/api/version"
       register: galaxy_service_live
       until: "galaxy_service_live.status == 200"
-      retries: 30
+      retries: 10
       delay: 10 # check every 10 seconds for a maximum of 5 minutes
+
+    - name: Test reverse proxy
+      ansible.builtin.command: curl --fail-with-body http://localhost:80/
+      changed_when: false
+      failed_when: false
+      register: galaxy_service_live
+
+    - name: Make sure Nginx is reverse proxying to Galaxy
+      ansible.builtin.assert:
+        that:
+          - "'Access to Galaxy is denied' in galaxy_service_live.stdout" # this sentence is displayed by Galaxy if the GX_SECRET header is not passed along

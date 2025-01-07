@@ -2,6 +2,8 @@
 - name: Wait for galaxy server to come up
   ansible.builtin.uri:
     url: http://{{ _galaxy_local_address }}/api/version
+    headers:
+      GX_SECRET: "{{ _galaxy_remote_user_secret }}"
   register: galaxy_service_live
   until: galaxy_service_live.status == 200
   retries: 30
