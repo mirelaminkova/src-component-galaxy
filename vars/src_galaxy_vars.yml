@@ -1,6 +1,11 @@
 ---
 # Variables derived from component parameters in ResearchCLoud
 
+_galaxy_job_destinations: # valid job destinations
+  - docker
+  - singularity
+  - local
+
 _galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool) }}"
 _galaxy_ibridges_enabled: "{{ src_ibridges | default(true, true) | bool }}"
 _galaxy_default_tool_files:
@@ -13,7 +18,8 @@ _galaxy_custom_repo_branch: "{{ src_galaxy_custom_repo_branch | default('main', 
 _galaxy_api_exposed: "{{ src_galaxy_api_exposed | default(true, true) }}"
 _galaxy_use_interactive_tools: "{{ src_galaxy_interactive_tools | default(true, true) | bool }}"
 _galaxy_server_fqdn: "{{ workspace_fqdn | default('localhost', true) }}"
-_galaxy_jobs_default: "{{ src_galaxy_jobs_default | default('local', true) }}"
+_galaxy_jobs_default: >-
+  {{ (src_galaxy_jobs_default is not defined or src_galaxy_jobs_default not in _galaxy_job_destinations) | ternary('local', src_galaxy_jobs_default) }}
 _galaxy_enable_docker: "{{ _galaxy_use_interactive_tools or (_galaxy_jobs_default == 'docker') }}"
 _galaxy_enable_tus: "{{ src_galaxy_enable_tus | default(true, true) | bool }}"
 _galaxy_enable_cvmfs: "{{ _molecule_active | ternary(false, src_galaxy_cvmfs | default(true, true) | bool) }}"
