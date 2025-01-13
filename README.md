@@ -118,10 +118,10 @@ You can stop/restart Galaxy using systemctl, e.g.: `<sudo> systemctl restart gal
 
 ## Testing
 
-This repo contains Molecule tests for the playbook. To run them, you'll need:
+This repo contains [Molecule](https://ansible.readthedocs.io/projects/molecule/) tests for the playbook. To run them, you'll need:
 
-1. Molecule installed
-1. Podman installed
+1. [Molecule](https://github.com/ansible/molecule/) installed
+1. [Podman](https://podman.io/docs/installation) installed
 2. Access to the `ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_jammy-nginx` container image
   * see: https://github.com/UtrechtUniversity/SRC-test-workspace/pkgs/container/src-test-workspace
 
