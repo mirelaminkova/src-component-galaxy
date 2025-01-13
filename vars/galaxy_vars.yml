@@ -47,7 +47,7 @@ postgresql_objects_databases:
 # Galaxy configuration section
 galaxy_configuration:
   galaxy:
-    brand: "SURF Research Cloud"
+    brand: "{{ _galaxy_brand }}"
     use_remote_user: true
     allow_user_creation: true
     allow_user_deletion: true
