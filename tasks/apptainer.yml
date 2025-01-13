@@ -1,0 +1,17 @@
+---
+- name: Download AppTainer ppa key
+  ansible.builtin.get_url:
+    url: "{{ apptainer_key_url }}"
+    dest: "{{ apptainer_key_location }}"
+    mode: "0644"
+
+- name: Add AppTainer repository for apt package manager
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by={{ apptainer_key_location }}] {{ apptainer_repo_url }} {{ ansible_distribution_release }} main
+    state: present
+    filename: apptainer
+    update_cache: true
+
+- name: Install AppTainer package
+  ansible.builtin.apt:
+    name: apptainer

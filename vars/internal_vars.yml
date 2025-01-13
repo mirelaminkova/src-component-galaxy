@@ -31,3 +31,10 @@ _galaxy_default_dispatcher: default_dispatcher # function and file name for the 
 docker_install_compose: false
 docker_users:
   - "{{ galaxy_user }}"
+
+
+# Variables concerning AppTainer installation
+
+apptainer_repo_url: https://ppa.launchpadcontent.net/apptainer/ppa/ubuntu
+apptainer_key_url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf6b0f5193d4f3301ef491ff0afe36534fc6218ae
+apptainer_key_location: /usr/share/keyrings/apptainer.asc

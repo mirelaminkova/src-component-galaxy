@@ -23,13 +23,15 @@
           - "gnutls-bin" # workaround for git-clone issue, https://stackoverflow.com/a/53147659/4326632
         state: present
 
+    - name: Install AppTainer
+      ansible.builtin.include_tasks: tasks/apptainer.yml
+
     - name: Additional nginx config
       ansible.builtin.include_tasks: tasks/nginx.yml
 
   roles:
     - role: galaxyproject.cvmfs
       when: _galaxy_enable_cvmfs
-    - role: usegalaxy_eu.apptainer
     - role: geerlingguy.docker
       when: not _molecule_active and _galaxy_enable_docker
     - role: uusrc.general.nginx_reverse_proxy
