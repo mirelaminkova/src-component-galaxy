@@ -92,6 +92,44 @@ If boostrapping is enabled, this Ansible playbook will:
 
 If needed Galaxy, is restarted. Finally, the playbook will __always__ remove the bootstrapping API key. 
 
+## Interactive tools
+
+Galaxy has support for so-called [interactive tools](https://docs.galaxyproject.org/en/master/admin/special_topics/interactivetools.html), but it needs to be enabled. The `src_galaxy_interactive_tools` parameter controls whether they should be activated. At the moment, Galaxy interactive tools have to be run in Docker containers (AppTainer is not supported). So if `src_galaxy_interactive_tools` is set to `true`, the playbook does the following:
+
+* Docker is installed
+* Docker tools are enabled in `job_config.yml`
+* A special Python script is used to determine whether a particular tool should be run as a Docker job.
+  * any tools that are of the kind `'interactive'` are sent to Docker
+  * __note__: this means that if an admin installs an interactive tool, it will automatically be configured *as* an interactive tool -- so admins should make sure that tools they install can securely be run as interactive tools.
+  * other tools are sent to the default job destination (configured by `src_galaxy_jobs_default`)
+  * see [templates/default_dispatch.py.j2]
+
+__Note__: Galaxy supporst two kinds of interactive tools:
+
+* subdomain-based: the interactive tool is made accessible on an ad-hoc created subdomain of the FQDN at which galaxy runs, e.g. `myinteractivetool12345.mygalaxy.com`
+* [path-based](https://docs.galaxyproject.org/en/master/admin/special_topics/interactivetools.html#path-based-interactivetools): the interactive tool is made accessible on a sub-path of the FQDN at which Galaxy runs, e.g. `mygalaxy.com/myinteractivetool12345`
+
+Because we cannot acquire SSL certificates for a wildcard subdomain on ResearchCloud, this component only supports path-based interactive tools.
+
 ## Maintenance
 
 You can stop/restart Galaxy using systemctl, e.g.: `<sudo> systemctl restart galaxy.target`. Use e.g. `<sudo> galaxyctl follow` to follow the logs of all Galaxy services.
+
+## Testing
+
+This repo contains Molecule tests for the playbook. To run them, you'll need:
+
+1. Molecule installed
+1. Podman installed
+2. Access to the `ghcr.io/utrechtuniversity/src-test-workspace:ubuntu_jammy-nginx` container image
+  * see: https://github.com/UtrechtUniversity/SRC-test-workspace/pkgs/container/src-test-workspace
+
+To run the tests, just run the following command from the root of this repository: `molecule test`.
+
+### Linting
+
+`ansible-lint` is configured for this repository. Just install `ansible-lint` and run: `ansible-lint . galaxysrv.yml`
+
+# License
+
+[GNU LGPL](LICENSE)
