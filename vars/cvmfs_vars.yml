@@ -1,0 +1,13 @@
+cvfms_role: client
+galaxy_cvmfs_repos_enabled: true
+cvmfs_quota_limit: 8000
+# override the default
+galaxy_cvmfs_server_urls:
+  - domain: galaxyproject.org
+    use_geoapi: true
+    urls:
+      - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
+      - "http://cvmfs1-psu0.galaxyproject.org/cvmfs/@fqrn@"
+cvmfs_tool_data_tables:
+  - /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml
+  - /cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml

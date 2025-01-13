@@ -68,7 +68,7 @@ galaxy_configuration:
     bootstrap_admin_api_key: "{{ _galaxy_bootstrap_api_key | default(omit) }}"
     nginx_x_accel_redirect_base: '/_x_accel_redirect'
     # CVMFS
-    tool_data_table_config_path: /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml,/cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
+    tool_data_table_config_path: "{{ _galaxy_enable_cvmfs | ternary((cvmfs_tool_data_tables | join(',')), omit) }}"
     dependency_resolvers_config_file: "{{ dependency_resolvers_config_file }}"
     container_resolvers_config_file: "{{ container_resolvers_config_file }}"
 

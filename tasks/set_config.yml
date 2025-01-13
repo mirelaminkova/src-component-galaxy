@@ -15,6 +15,9 @@
 - name: Load interactive tools variables
   ansible.builtin.include_vars: vars/interactive_tools_vars.yml
 
+- name: Load CVMFS variables
+  ansible.builtin.include_vars: vars/cvmfs_vars.yml
+
 - name: Set admins from CO group
   ansible.builtin.set_fact:
     _galaxy_admins: >-
