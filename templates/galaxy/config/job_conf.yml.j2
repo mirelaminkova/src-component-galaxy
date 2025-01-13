@@ -11,7 +11,7 @@ execution:
       env:
         - name: PATH
           action: prepend_to
-          value: /srv/galaxy/datadir/shed_tools:$PATH
+          value: "{{ galaxy_mutable_data_dir }}/shed_tools:$PATH"
     docker:
       runner: local
       docker_enabled: true
@@ -27,7 +27,7 @@ execution:
 
     singularity:
       singularity_volumes: "$galaxy_root:ro,$tool_directory:ro,$working_directory:rw,$job_directory:rw,{{ galaxy_mutable_data_dir }}:rw"
-      runner: local_runner
+      runner: local
       singularity_enabled: true
       container_resolvers:
         - type: cached_explicit_singularity
