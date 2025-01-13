@@ -1,3 +1,5 @@
+# You can use this file to pass in parameters when testing the playbook locally, with something like:
+# ansible-playbook -i localhost, -c local -e "@parameters.yml" -vv galaxysrv.yml
 src_galaxy_bootstrap: false
 src_galaxy_interactive_tools: false
 workspace_fqdn: galaxy.uu-surfcodevop.src.surf-hosted.nl
