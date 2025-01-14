@@ -47,6 +47,7 @@ galaxy_nginx_vhost_config:
     add_headers:
       Access-Control-Allow-Origin: $upstream_http_access_control_allow_origin
       Access-Control-Allow-Methods: $upstream_http_access_control_allow_methods
+tusd_nginx_config:
   - name: tus
     location: '/api/upload/resumable_upload'
     proxy_request_buffering: 'off'
