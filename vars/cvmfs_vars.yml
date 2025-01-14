@@ -1,4 +1,4 @@
-cvfms_role: client
+cvmfs_role: client
 galaxy_cvmfs_repos_enabled: true
 cvmfs_quota_limit: 8000
 # override the default
@@ -9,5 +9,7 @@ galaxy_cvmfs_server_urls:
       - "http://cvmfs1-ufr0.galaxyproject.eu/cvmfs/@fqrn@"
       - "http://cvmfs1-psu0.galaxyproject.org/cvmfs/@fqrn@"
 cvmfs_tool_data_tables:
+  # Data generated prior to the existence/use of Data Managers, manually curated. (For legacy reasons, this directory is shared as /indexes on the HTTP and rsync servers.)
   - /cvmfs/data.galaxyproject.org/byhand/location/tool_data_table_conf.xml
+  # Data generated with Galaxy Data Managers, organized by data table (index format), then by genome build.
   - /cvmfs/data.galaxyproject.org/managed/location/tool_data_table_conf.xml
