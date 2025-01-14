@@ -36,7 +36,6 @@ galaxy_config_templates:
   - src: templates/galaxy/config/container_resolvers_conf.yml.j2
     dest: "{{ container_resolvers_config_file }}"
   - src: templates/galaxy/config/dependency_resolvers_conf.xml.j2
-    dest: "{{ dependency_resolvers_config_file }}"
 postgresql_objects_users:
   - name: galaxy
     password:
@@ -77,6 +76,7 @@ galaxy_configuration:
     virtualenv: "{{ galaxy_venv_dir }}"
     process_manager: systemd
 
+
     tusd:
       enable: "{{ _galaxy_enable_tus }}"
       tusd_path: /usr/local/sbin/tusd
@@ -108,3 +108,8 @@ galaxy_configuration:
     gx_it_proxy:
       enable: "{{ _galaxy_use_interactive_tools }}"
       port: "{{ gie_proxy_port }}"
+
+# Optionally disable unused templates
+# galaxy_config_templates:
+#   - src: templates/galaxy/config/dependency_resolvers_conf.xml
+#     dest: "{{ galaxy_config.galaxy.dependency_resolvers_config_file }}"
