@@ -59,3 +59,15 @@
 - name: Save _galaxy_config
   ansible.builtin.set_fact:
     _galaxy_config: "{{ galaxy_configuration }}"
+
+- name: Set AppTainer volume mounts variable
+  ansible.builtin.set_fact:
+    apptainer_volumes: "{{ apptainer_volumes | default([]) | union([item]) }}"
+  when: item != omit
+  loop:
+    - "$galaxy_root:ro"
+    - "$tool_directory:ro"
+    - "$working_directory:rw"
+    - "$job_directory:rw"
+    - "{{ galaxy_mutable_data_dir }}:rw"
+    - "{% if _galaxy_enable_cvmfs %}/cvmfs{% else %}{{ omit }}{% endif %}" # Conditionally add the /cvmfs dir to volume mounts

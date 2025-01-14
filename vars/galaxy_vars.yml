@@ -21,15 +21,6 @@ galaxy_client_use_prebuilt: true
 galaxy_systemd_root: true
 galaxy_backup_configfiles: false
 
-# Defining volume mounts for AppTainer containers
-apptainer_volumes:
-  - "$galaxy_root:ro"
-  - "$tool_directory:ro"
-  - "$working_directory:rw"
-  - "$job_directory:rw"
-  - "{{ galaxy_mutable_data_dir }}:rw"
-  - "{{ _galaxy_enable_cvmfs | ternary(',/cvmfs', omit) }}"
-
 # Defining the variables for galaxy/config
 user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
 job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
