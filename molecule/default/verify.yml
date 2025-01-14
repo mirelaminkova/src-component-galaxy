@@ -11,13 +11,24 @@
       retries: 10
       delay: 10 # check every 10 seconds for a maximum of 5 minutes
 
-    - name: Test reverse proxy
+    - name: Test reverse proxy without auth
       ansible.builtin.command: curl --fail-with-body http://localhost:80/
       changed_when: false
       failed_when: false
       register: galaxy_service_live
 
-    - name: Make sure Nginx is reverse proxying to Galaxy
+    - name: Get GX_SECRET
+      ansible.builtin.shell: grep -r GX_SECRET /etc/nginx | rev | cut -f 1 -d " " | rev | cut -f1 -d ";"
+      register: gx_secret
+
+    - name: Test Galaxy with auth and secret
+      ansible.builtin.uri:
+        url: http://localhost:8080/
+        headers:
+          REMOTE_USER: testuser
+          GX_SECRET: "{{ gx_secret.stdout }}"
+
+    - name: Assertions
       ansible.builtin.assert:
         that:
           - "'Access to Galaxy is denied' in galaxy_service_live.stdout" # this sentence is displayed by Galaxy if the GX_SECRET header is not passed along
