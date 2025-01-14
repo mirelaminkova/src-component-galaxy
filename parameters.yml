@@ -1,7 +1,8 @@
 # You can use this file to pass in parameters when testing the playbook locally, with something like:
 # ansible-playbook -i localhost, -c local -e "@parameters.yml" -vv galaxysrv.yml
-src_galaxy_bootstrap: false
-src_galaxy_interactive_tools: false
-workspace_fqdn: galaxy.uu-surfcodevop.src.surf-hosted.nl
-src_galaxy_cvmfs: true
+# Note: define booleans as strings to simulare behavior on ResearchCloud.
+src_galaxy_bootstrap: 'false'
+src_galaxy_interactive_tools: 'false'
+workspace_fqdn: set_to_your_fqdn
+src_galaxy_cvmfs: 'true'
 src_galaxy_jobs_default: singularity
