@@ -8,7 +8,6 @@
   until: galaxy_service_live.status == 200
   retries: 30
   delay: 10 # check every 10 seconds for a maximum of 5 minutes
-
 - name: Get user defined tools and workflows from a custom git repo
   when: _galaxy_custom_repo | length > 0
   block:

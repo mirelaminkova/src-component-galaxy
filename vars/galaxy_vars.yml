@@ -24,6 +24,7 @@ galaxy_backup_configfiles: false
 # Defining the variables for galaxy/config
 user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_conf.yml"
 job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
+pulsar_config_file: "{{ galaxy_config_dir }}/pulsar_app.yml"
 container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
 
 # see https://docs.galaxyproject.org/en/latest/admin/dependency_resolvers.html#default-dependency-resolvers
@@ -36,12 +37,15 @@ galaxy_dependency_resolvers:
   - type: conda
     versionless: true
 
+
 # Galaxy config templates
 galaxy_config_templates:
   - src: templates/galaxy/config/user_preferences_extra_conf.yml.j2
     dest: "{{ user_preference_config_file }}"
   - src: templates/galaxy/config/job_conf.yml.j2
     dest: "{{ job_config_file }}"
+  - src: templates/galaxy/config/pulsar_app.yml.j2
+    dest: "{{ pulsar_config_file }}"
   - src: templates/galaxy/config/container_resolvers_conf.yml.j2
     dest: "{{ container_resolvers_config_file }}"
 # Additional Galaxy config files
@@ -114,6 +118,7 @@ galaxy_configuration:
       bind: "{{ _galaxy_local_address }}"
       # Performance options
       workers: 2
+      # Extra args passed to Gunicorn
       # Other options that will be passed to gunicorn
       # This permits setting of 'secure' headers like REMOTE_USER (and friends)
       # https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips

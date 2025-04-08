@@ -30,14 +30,14 @@ Galaxy is configured to let the webserver (Nginx) handle authentication. The web
 
 Any members of the workspace's Collaborative Organisation (CO) will be able to authenticate using the authentication mechanism of their institution (Single Sign-On).
 
-Galaxy is configured such that members of the CO that are in the SRAM workspace admin group (`src_co_admin`) will be Galaxy administrator when logging in via SSH (`sudo` will require entering the user's SRAM TOTP). Other users are normal users.
+Galaxy is configured such that members of the CO that are in the SRAM workspace admin group (`src_co_admin`) will be Galaxy administrators.
 
 Note: only members of the `src_co_admin` group are given permission to install tools on the Galaxy instance.
 
 ### Logging in via SSH
 
 The Galaxy VM will be accessible via SSH for users in the Collaborative Organization. However, only users in the CO admin group 
-(configured by the `src_galaxy_co_admin_group` parameter, default: `src_co_admin`) will be able to `sudo`.
+(configured by the `src_galaxy_co_admin_group` parameter, default: `src_co_admin`) will be able to `sudo` (this will require entering the user's SRAM TOTP). Other users are normal users.
 
 The Galaxy application listening on localhost will expect a secret key in the request header that Nginx is configured to pass on when reverse proxying; as non-admin users
 on the Galaxy machine won't have access to this secret key, they cannot directly query Galaxy on localhost.

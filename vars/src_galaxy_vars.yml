@@ -6,7 +6,7 @@ _galaxy_job_destinations: # valid job destinations
   - singularity
   - local
 
-_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(true, true) | bool) }}"
+_galaxy_bootstrap: "{{ _molecule_idempotence | ternary(false, src_galaxy_bootstrap | default(false, true) | bool) }}"
 _galaxy_ibridges_enabled: "{{ src_ibridges | default(true, true) | bool }}"
 _galaxy_default_tool_files:
   - path: tools/ibridges.yml
