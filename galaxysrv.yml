@@ -34,10 +34,13 @@
       when: _galaxy_enable_cvmfs
     - role: geerlingguy.docker
       when: not _molecule_active and _galaxy_enable_docker
+    - role: uusrc.general.nginx_location
+      vars:
+        nginx_location_locations: "{{ galaxy_nginx_vhost_config }}"
     - role: uusrc.general.nginx_reverse_proxy
       vars:
         nginx_reverse_proxy_locations: >-
-          {{ galaxy_nginx_vhost_config +
+          {{ galaxy_nginx_proxy_config +
             ( _galaxy_enable_tus | ternary(tusd_nginx_config, []) ) }}
     - role: galaxyproject.postgresql
     - role: galaxyproject.postgresql_objects

@@ -21,4 +21,4 @@ collections:
   - name: community.postgresql
   - name: https://github.com/UtrechtUniversity/researchcloud-items.git # uusrc.general
     type: git
-    version: 801c6d2cb21677ef3926c4172cd6c79e48004b62
+    version: 5cf6f0141f09a0f4853cacd3abb3604f43153cb4
