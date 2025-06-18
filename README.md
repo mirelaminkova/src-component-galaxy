@@ -76,7 +76,7 @@ The `src_galaxy_bootstrap` parameter determines whether the Galaxy instance shou
 These can be installed from various sources:
 
 * a git repo containing `.yml` files descibing which tools to install, and `.ga` workflows files
-  * example repo here
+  * see the example repo [here](https://github.com/dometto/galaxy-custom-tools-test.git)
   * put tool files in the `tools` subdirectory (as defined by the `_galaxy_custom_repo_tool_location` internal variable).
   * put workflow files in the `workflows` subdirectory (as defined by the `_galaxy_custom_repo_workflow_location` internal variable).
   * use `src_galaxy_custom_repo` and `src_galaxy_custom_repo_branch` to define your repository.
