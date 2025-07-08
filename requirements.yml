@@ -6,9 +6,9 @@ roles:
   - src: https://github.com/utrechtuniversity/ansible-galaxy-tools.git
     name: galaxyproject.galaxy-tools
   - src: galaxyproject.postgresql
-    version: 1.1.2
+    version: 1.1.8
   - src: galaxyproject.postgresql_objects
-    version: 1.2.0
+    version: 1.2.1
   - src: geerlingguy.docker
     version: 6.1.0
   - name: galaxyproject.tusd
