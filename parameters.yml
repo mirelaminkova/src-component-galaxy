@@ -3,6 +3,6 @@
 # Note: define booleans as strings to simulare behavior on ResearchCloud.
 src_galaxy_bootstrap: 'false'
 src_galaxy_interactive_tools: 'false'
-workspace_fqdn: set_to_your_fqdn
+workspace_fqdn: ubuntu2204mire
 src_galaxy_cvmfs: 'true'
 src_galaxy_jobs_default: singularity
