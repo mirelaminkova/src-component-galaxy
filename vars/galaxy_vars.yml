@@ -58,7 +58,8 @@ postgresql_objects_users:
 postgresql_objects_databases:
   - name: galaxy
     owner: galaxy
-
+  - name: galaxy_celery
+    owner: galaxy
 # Galaxy configuration section
 galaxy_configuration:
   galaxy:
@@ -96,7 +97,7 @@ galaxy_configuration:
     amqp_internal_connection: "sqlalchemy+postgresql:///galaxy?host=/var/run/postgresql"
     celery_conf:
       broker_url: null
-      result_backend: "db+postgresql:///galaxy?host=/var/run/postgresql"
+      result_backend: "db+postgresql:///galaxy_celery?host=/var/run/postgresql"
       task_routes:
         galaxy.fetch_data: galaxy.external
         galaxy.set_job_metadata: galaxy.external
