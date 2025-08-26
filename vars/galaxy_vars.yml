@@ -37,7 +37,6 @@ galaxy_dependency_resolvers:
   - type: conda
     versionless: true
 
-
 # Galaxy config templates
 galaxy_config_templates:
   - src: templates/galaxy/config/user_preferences_extra_conf.yml.j2
@@ -140,4 +139,3 @@ galaxy_configuration:
     gx_it_proxy:
       enable: "{{ _galaxy_use_interactive_tools }}"
       port: "{{ gie_proxy_port }}"
-
