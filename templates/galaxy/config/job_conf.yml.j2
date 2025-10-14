@@ -15,6 +15,8 @@ execution:
         - name: PATH
           action: prepend_to
           value: "{{ galaxy_mutable_data_dir }}/shed_tools:$PATH"
+        - name: TMPDIR
+          value: "{{ galaxy_mutable_data_dir }}/tmp"
     docker:
       runner: local
       docker_enabled: true
@@ -50,11 +52,12 @@ execution:
           value: C
         # The cache directory holds the docker containers that get converted
         - name: APPTAINER_CACHEDIR
-          value: /tmp/singularity
+          value: "{{ galaxy_mutable_data_dir }}/cache/singularity"
         # Apptainer uses a temporary directory to build the squashfs filesystem
         - name: APPTAINER_TMPDIR
-          value: /tmp
-
+          value: "{{ galaxy_mutable_data_dir }}/tmp"
+        - name: TMPDIR
+          value: "{{ galaxy_mutable_data_dir }}/tmp"
 {% if _galaxy_has_pulsar %}
 {% for pulsar in _galaxy_pulsar_configs_raw %}
 {% set env_name = 'remote_' ~ (pulsar.name | default(pulsar.url | replace('https://', '') | replace('http://', '') | replace('.', '-') | replace('/', '-'))) %}

@@ -75,6 +75,9 @@ galaxy_configuration:
     remote_user_secret: "{{ _galaxy_remote_user_secret }}"
     database_connection: postgresql:///galaxy?host=/var/run/postgresql
     file_path: "{{ galaxy_mutable_data_dir }}/datasets"
+    new_file_path: "{{ galaxy_mutable_data_dir }}/tmp"
+    temp_directory: "{{ galaxy_mutable_data_dir }}/tmp"
+    job_working_directory: "{{ galaxy_mutable_data_dir }}/jobs"
     job_config_file: "{{ job_config_file }}"
     tool_config_file: "{{ galaxy_config_dir }}/tool_conf.xml"
     user_preferences_extra_conf_path: "{{ user_preference_config_file }}"
