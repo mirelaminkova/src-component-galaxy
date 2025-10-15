@@ -114,7 +114,7 @@
         state: started
       with_items:
         - galaxy-tusd.service
-        - galaxy.target
+#        - galaxy.target #commented out galaxy.target when tus is disabled.else, the playbook fails
 
     - name: Run bootstrap
       when: _galaxy_do_bootstrap
