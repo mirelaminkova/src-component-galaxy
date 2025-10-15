@@ -106,6 +106,15 @@
         mode: "0644"
         content: "%{{ _galaxy_admin_co_group }} ALL=(ALL:ALL) ALL"
 
+    - name: Ensure TUS tmp dir exists
+      ansible.builtin.file:
+        path: "{{ galaxy_mutable_data_dir }}/tus_temp"
+        state: directory
+        owner: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
+        mode: "0750"
+      when: _galaxy_enable_tus
+
     - name: Ensure services enabled and started
       when: "(not item == 'galaxy-tusd.service') or _galaxy_enable_tus"
       ansible.builtin.systemd_service:

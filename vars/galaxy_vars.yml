@@ -112,7 +112,7 @@ galaxy_configuration:
       tusd_path: /usr/local/sbin/tusd
       upload_dir: "{{ galaxy_tus_upload_store }}"
       port: "{{ galaxy_tusd_port }}"
-
+      additional_args: "-temp-dir {{ galaxy_mutable_data_dir }}/tus_temp"
     gunicorn:
       # Listening options
       bind: "{{ _galaxy_local_address }}"
