@@ -21,7 +21,7 @@ _galaxy_jobs_fallback: singularity
 _galaxy_jobs_default: >-
   {{ (src_galaxy_jobs_default is not defined or src_galaxy_jobs_default not in _galaxy_job_destinations) | ternary(_galaxy_jobs_fallback, src_galaxy_jobs_default) }}
 _galaxy_enable_docker: "{{ _galaxy_use_interactive_tools or (_galaxy_jobs_default == 'docker') }}"
-_galaxy_enable_tus: "{{ src_galaxy_enable_tus | default(true, true) | bool }}"
+_galaxy_enable_tus: "{{ src_galaxy_enable_tus | default(false, false) | bool }}" # changed from true, true 
 _galaxy_enable_cvmfs: "{{ _molecule_active | ternary(false, src_galaxy_cvmfs | default(true, true) | bool) }}"
 _galaxy_brand: "{{ src_galaxy_brand | default('SURF ResearchCloud', true) }}"
 
