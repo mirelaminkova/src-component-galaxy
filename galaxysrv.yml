@@ -115,6 +115,15 @@
         mode: "0750"
       when: _galaxy_enable_tus
 
+    - name: Create symlink from tmp TUS to the mutable data dir
+      ansible.builtin.file:
+        src: "{{ galaxy_mutable_data_dir }}/tus_temp"
+        dest: "/tmp/tusd"
+        state: link
+        owner: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
+      when: _galaxy_enable_tus
+
     - name: Ensure services enabled and started
       when: "(not item == 'galaxy-tusd.service') or _galaxy_enable_tus"
       ansible.builtin.systemd_service:
