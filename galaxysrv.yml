@@ -49,8 +49,18 @@
     - role: galaxyproject.galaxy
       vars:
         galaxy_config: "{{ _galaxy_config }}"
+    - role: usegalaxy_eu.tpv_auto_lint
     - role: galaxyproject.tusd
       when: _galaxy_enable_tus
+  post_tasks:
+    - name: Create new TPV lint and copy sh file
+      become: true
+      ansible.builtin.template:
+        src: templates/galaxy/config/tpv-lint-and-copy.sh.j2
+        dest: "{{ tpv_mutable_dir }}/tpv-lint-and-copy.sh"
+        owner: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
+        mode: "0755"
 
   tasks:
 

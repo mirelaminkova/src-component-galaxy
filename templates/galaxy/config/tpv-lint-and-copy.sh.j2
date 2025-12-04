@@ -1,0 +1,34 @@
+#!/bin/bash
+# Script that copies files to TPV config dir, only if linting is successful
+
+GALAXY_ROOT="{{ galaxy_server_dir }}"
+PYTHONPATH="${GALAXY_ROOT}/lib:${GALAXY_ROOT}"
+VENV="{{ galaxy_venv_dir }}"
+TPV_MUTABLE_DIR="{{ tpv_mutable_dir }}"
+TPV_DIR="{{ tpv_config_dir }}"
+TPV_DIR_NAME="{{ tpv_config_dir_name }}"
+JOB_CONFIG_FILE="{{ galaxy_job_config_file }}"
+
+# If there are no YAMLs to lint, just exit successfully
+if ! compgen -G "${TPV_MUTABLE_DIR}/*.yml" > /dev/null; then
+    echo "No TPV YAML files found in ${TPV_MUTABLE_DIR}, skipping lint."
+    exit 0
+fi
+. $VENV/bin/activate
+
+for f in *.yml; do
+        if PYTHONPATH=$PYTHONPATH tpv lint "$f"; then
+                echo "lint successful, checking job_conf..."
+                if grep -q "/total_perspective_vortex/$f" "$GALAXY_CONF_DIR/job_conf.yml"; then
+                        echo "$f is present in job_conf, copying..."
+                        [[ $(type -t cp) == "alias" ]] && unalias cp
+                        cp -bu "$f" "$TPV_DIR/$f"
+                else
+                        echo "$f is not present in job_conf, exiting..."
+                        exit 3 && true
+                fi
+        else
+                echo "lint failed, '$f' was not copied"
+                exit 3 && true
+    fi
+done

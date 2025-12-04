@@ -7,7 +7,7 @@ runners:
     load: galaxy.jobs.runners.pulsar:PulsarRESTJobRunner
 {% endif %}
 execution:
-  default: singularity
+  default: tpv_dispatcher
   environments:
     local:
       runner: local
@@ -29,31 +29,39 @@ execution:
       function: {{ _galaxy_default_dispatcher }}
 {% endif %}
 
-    singularity:
-      singularity_volumes: {{ apptainer_volumes | join(',') }}
-      runner: local
-      singularity_enabled: true
-      container_resolvers:
-        - type: cached_explicit_singularity
-          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
-        - type: cached_mulled_singularity
-          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
-        - type: mulled_singularity
-          auto_install: False
-          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
-        - type: build_mulled_singularity
-          auto_install: False
-          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
-      env:
-        # Ensuring a consistent collation environment is good for reproducibility.
-        - name: LC_ALL
-          value: C
+#    singularity:
+#      singularity_volumes: {{ apptainer_volumes | join(',') }}
+#      runner: local
+#      singularity_enabled: true
+#      container_resolvers:
+#        - type: cached_explicit_singularity
+#          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
+#        - type: cached_mulled_singularity
+#          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
+#        - type: mulled_singularity
+#          auto_install: False
+#          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/mulled/"
+#        - type: build_mulled_singularity
+#          auto_install: False
+#          cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
+#      env:
+#        # Ensuring a consistent collation environment is good for reproducibility.
+#        - name: LC_ALL
+#          value: C
         # The cache directory holds the docker containers that get converted
-        - name: APPTAINER_CACHEDIR
-          value: /tmp/singularity
+#        - name: APPTAINER_CACHEDIR
+#          value: /tmp/singularity
         # Apptainer uses a temporary directory to build the squashfs filesystem
-        - name: APPTAINER_TMPDIR
-          value: /tmp
+#        - name: APPTAINER_TMPDIR
+#          value: /tmp
+    tpv_dispatcher:
+      runner: dynamic
+      type: python
+      function: map_tool_to_destination
+      rules_module: tpv.rules
+      tpv_config_files:
+        - https://gxy.io/tpv/db-v2.yml
+        - config/tpv_rules_local.yml
 
 {% if _galaxy_has_pulsar %}
 {% for pulsar in _galaxy_pulsar_configs_raw %}

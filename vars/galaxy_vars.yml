@@ -1,8 +1,9 @@
 # Variables for the Galaxy project role
 galaxy_config_style: yaml
 galaxy_layout: custom
-galaxy_server_dir: "{{ _galaxy_root }}/server"
 galaxy_root: "{{ galaxy_server_dir }}"  # workaround for a known issue https://github.com/galaxyproject/ansible-galaxy/issues/138
+galaxy_server_dir: "{{ _galaxy_root }}/server"
+#galaxy_root: "{{ galaxy_server_dir }}"  # workaround for a known issue https://github.com/galaxyproject/ansible-galaxy/issues/138
 galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
@@ -26,6 +27,8 @@ user_preference_config_file: "{{ galaxy_config_dir }}/user_preferences_extra_con
 job_config_file: "{{ galaxy_config_dir }}/job_conf.yml"
 pulsar_config_file: "{{ galaxy_config_dir }}/pulsar_app.yml"
 container_resolvers_config_file: "{{ galaxy_config_dir }}/container_resolvers_conf.yml"
+# TPV rules config file
+tpv_rules_local_file: "{{ galaxy_config_dir }}/tpv_rules_local.yml"
 
 # see https://docs.galaxyproject.org/en/latest/admin/dependency_resolvers.html#default-dependency-resolvers
 galaxy_dependency_resolvers:
@@ -47,10 +50,14 @@ galaxy_config_templates:
     dest: "{{ pulsar_config_file }}"
   - src: templates/galaxy/config/container_resolvers_conf.yml.j2
     dest: "{{ container_resolvers_config_file }}"
+#  - src: templates/galaxy/config/tpv_rules_local.yml.j2
+#    dest: "{{ tpv_rules_local_file }}"
 # Additional Galaxy config files
 galaxy_config_files:
   - src: templates/themes.yml
     dest: "{{ galaxy_config.galaxy.themes_config_file }}"
+  - src: templates/galaxy/config/tpv_rules_local.yml.j2
+    dest: "{{ tpv_rules_local_file }}"
 postgresql_objects_users:
   - name: galaxy
     password:

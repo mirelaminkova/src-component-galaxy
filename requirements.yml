@@ -16,6 +16,9 @@ roles:
     version: e009b498a7989d8002c6a5d104176295d63e9fae
   - src: galaxyproject.cvmfs
     version: 0.2.21
+  - name: usegalaxy_eu.tpv_auto_lint
+    version: 0.4.3
+   
 collections:
   - name: community.general
   - name: community.postgresql
