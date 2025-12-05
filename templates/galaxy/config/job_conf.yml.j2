@@ -99,7 +99,7 @@ execution:
 
 tools:
   - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
-    environment: local
+    environment: tpv_dispatcher
 {% if _galaxy_has_pulsar and _galaxy_pulsar_tool_mappings | length > 0 %}
 {% for tool_mapping in _galaxy_pulsar_tool_mappings %}
   - id: {{ tool_mapping.tool_id }}

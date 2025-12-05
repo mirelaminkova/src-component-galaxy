@@ -1,5 +1,41 @@
 global:
   default_inherits: tpvdb_default
 
-tools: {}
-destinations: {}
+destinations:
+  local_singularity:
+    id: singularity
+    max_accepted_cores: 32
+    max_accepted_mem: 256
+    scheduling:
+      tags:
+        - local
+
+{% if _galaxy_has_pulsar %}
+{% for pulsar in _galaxy_pulsar_configs_raw %}
+{% set env_name = 'remote_' ~ (pulsar.name | default(pulsar.url | replace('https://','') | replace('http://','') | replace('.','-') | replace('/','-'))) %}
+  {{ env_name }}:
+    id: {{ env_name }}
+    inherits: local_singularity
+    scheduling:
+      tags:
+        - pulsar
+{% endfor %}
+{% endif %}
+
+tools:
+  default:
+    scheduling:
+      accept:
+        - local
+{% if _galaxy_has_pulsar %}
+        - pulsar
+{% endif %}
+
+{% if _galaxy_has_pulsar and _galaxy_pulsar_tool_mappings | length > 0 %}
+{% for m in _galaxy_pulsar_tool_mappings %}
+  "{{ m.tool_id }}":
+    scheduling:
+      prefer:
+        - pulsar
+{% endfor %}
+{% endif %}
