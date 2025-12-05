@@ -49,19 +49,30 @@
     - role: galaxyproject.galaxy
       vars:
         galaxy_config: "{{ _galaxy_config }}"
-    - role: usegalaxy_eu.tpv_auto_lint
+#    - role: usegalaxy_eu.tpv_auto_lint
     - role: galaxyproject.tusd
       when: _galaxy_enable_tus
   post_tasks:
-    - name: Create new TPV lint and copy sh file
+    - name: Ensure TPV mutable dir exists
+      become: true
+      ansible.builtin.file:
+        path: "{{ tpv_mutable_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Deploy tpv-lint-and-copy custom changes
       become: true
       ansible.builtin.template:
         src: templates/galaxy/config/tpv-lint-and-copy.sh.j2
         dest: "{{ tpv_mutable_dir }}/tpv-lint-and-copy.sh"
-        owner: "{{ galaxy_user }}"
-        group: "{{ galaxy_group }}"
+        owner: root
+        group: root
         mode: "0755"
 
+    - name: Run TPV lint-and-copy using custom script
+      become: true
+      ansible.builtin.command:
+        cmd: "{{ tpv_mutable_dir }}/tpv-lint-and-copy.sh"
   tasks:
 
     - name: Lock down nginx config for www-data # so non-root users cannot read the GX_SECRET
@@ -152,3 +163,5 @@
       ansible.builtin.command: "/usr/local/bin/galaxyctl graceful"
       listen: "restart galaxy"
       when: _galaxy_already_started is not defined
+
+

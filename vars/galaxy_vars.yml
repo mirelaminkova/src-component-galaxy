@@ -1,9 +1,8 @@
 # Variables for the Galaxy project role
 galaxy_config_style: yaml
 galaxy_layout: custom
-galaxy_root: "{{ galaxy_server_dir }}"  # workaround for a known issue https://github.com/galaxyproject/ansible-galaxy/issues/138
 galaxy_server_dir: "{{ _galaxy_root }}/server"
-#galaxy_root: "{{ galaxy_server_dir }}"  # workaround for a known issue https://github.com/galaxyproject/ansible-galaxy/issues/138
+galaxy_root: "{{ galaxy_server_dir }}"  # workaround for a known issue https://github.com/galaxyproject/ansible-galaxy/issues/138
 galaxy_manage_systemd: false
 galaxy_venv_dir: "{{ _galaxy_root }}/venv"
 galaxy_config_dir: "{{ _galaxy_root }}/config"
@@ -11,6 +10,10 @@ galaxy_mutable_data_dir: "{{ src_galaxy_storage_path | default(_galaxy_root + '/
 galaxy_commit_id: release_{{ src_galaxy_version | default('25.0', true) }} # component variable src_galaxy_version
 galaxy_tusd_port: 8002
 galaxy_tus_upload_store: "{{ galaxy_mutable_data_dir }}/tus_data"
+tpv_mutable_dir: "{{ galaxy_mutable_data_dir }}/total_perspective_vortex"
+tpv_config_dir_name: "TPV_DO_NOT_TOUCH"
+tpv_config_dir: "{{ galaxy_config_dir }}/{{ tpv_config_dir_name }}"
+galaxy_job_config_file: "{{ job_config_file }}"
 galaxy_separate_privileges: true
 galaxy_create_user: true
 galaxy_manage_paths: true
