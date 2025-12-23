@@ -13,6 +13,8 @@ galaxy_tus_upload_store: "{{ galaxy_mutable_data_dir }}/tus_data"
 tpv_mutable_dir: "{{ galaxy_mutable_data_dir }}/total_perspective_vortex"
 tpv_config_dir_name: "TPV_DO_NOT_TOUCH"
 tpv_config_dir: "{{ galaxy_config_dir }}/{{ tpv_config_dir_name }}"
+tpv_local_max_accepted_cores: "{{ [1, (ansible_facts.processor_vcpus | int) - 1] | max }}"
+tpv_local_max_accepted_mem: "{{ [1, (((ansible_facts.memtotal_mb | int) / 1024) * 0.90) | int] | max }}"
 galaxy_job_config_file: "{{ job_config_file }}"
 galaxy_separate_privileges: true
 galaxy_create_user: true
