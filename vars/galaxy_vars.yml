@@ -55,14 +55,12 @@ galaxy_config_templates:
     dest: "{{ pulsar_config_file }}"
   - src: templates/galaxy/config/container_resolvers_conf.yml.j2
     dest: "{{ container_resolvers_config_file }}"
-#  - src: templates/galaxy/config/tpv_rules_local.yml.j2
-#    dest: "{{ tpv_rules_local_file }}"
+  - src: templates/galaxy/config/tpv_rules_local.yml.j2
+    dest: "{{ tpv_rules_local_file }}"
 # Additional Galaxy config files
 galaxy_config_files:
   - src: templates/themes.yml
     dest: "{{ galaxy_config.galaxy.themes_config_file }}"
-  - src: templates/galaxy/config/tpv_rules_local.yml.j2
-    dest: "{{ tpv_rules_local_file }}"
 postgresql_objects_users:
   - name: galaxy
     password:
