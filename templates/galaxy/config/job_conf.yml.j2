@@ -61,7 +61,7 @@ execution:
       rules_module: tpv.rules
       tpv_config_files:
         - https://gxy.io/tpv/db-latest.yml
-        - {{ tpv_rules_local_file }}/tpv_rules_local.yml
+        - {{ tpv_rules_local_file }}
 
 {% if _galaxy_has_pulsar %}
 {% for pulsar in _galaxy_pulsar_configs_raw %}
