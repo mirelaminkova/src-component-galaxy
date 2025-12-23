@@ -2,8 +2,8 @@ global:
   default_inherits: tpvdb_default
 
 destinations:
-  local_singularity:
-    id: singularity
+  singularity:
+    runner: local
     max_accepted_cores: {{ tpv_local_max_accepted_cores }}
     max_accepted_mem: {{ tpv_local_max_accepted_mem }}
     scheduling:
