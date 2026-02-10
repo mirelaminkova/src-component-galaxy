@@ -71,14 +71,9 @@ execution:
       singularity_enabled: {{ pulsar.singularity_enabled | default(false) }}
       tmp_dir: {{ pulsar.tmp_dir | default(true) }}
       outputs_to_working_directory: {{ pulsar.outputs_to_working_directory | default(false) }}
-{% if pulsar.container_resolvers is defined %}
       container_resolvers:
-{% for resolver in pulsar.container_resolvers %}
-        - type: {{ resolver.type }}
-{% if resolver.require_container is defined %}
-          require_container: {{ resolver.require_container }}
-{% endif %}
-{% endfor %}
+        - type: explicit
+          require_container: True
 {% endif %}
 {% if pulsar.container_monitor_command is defined %}
       container_monitor_command: {{ pulsar.container_monitor_command }}
