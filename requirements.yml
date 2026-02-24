@@ -2,7 +2,7 @@
 roles:
   - src: https://github.com/galaxyproject/ansible-galaxy.git
     name: galaxyproject.galaxy
-    version: 08974b18e2aad1e5569854e5d6c8b5c966bf55e4
+    version: 0.12.3
   - src: https://github.com/utrechtuniversity/ansible-galaxy-tools.git
     name: galaxyproject.galaxy-tools
   - src: galaxyproject.postgresql
@@ -15,7 +15,7 @@ roles:
     src: https://github.com/galaxyproject/ansible-role-tusd.git
     version: e009b498a7989d8002c6a5d104176295d63e9fae
   - src: galaxyproject.cvmfs
-    version: 0.2.21
+    version: 0.5.0
 collections:
   - name: community.general
   - name: community.postgresql
