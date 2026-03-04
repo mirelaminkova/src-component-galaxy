@@ -53,7 +53,17 @@
       when: _galaxy_enable_tus
 
   tasks:
-
+    - name: Ensure Galaxy storage has correct permissions
+      when: src_galaxy_storage_path is defined and src_galaxy_storage_path | length > 0
+      become: true
+      ansible.builtin.file:
+        path: "{{ galaxy_mutable_data_dir }}"
+        state: directory
+        owner: "{{ galaxy_user }}"
+        group: "{{ galaxy_group }}"
+        mode: "0755"
+        recurse: true
+    
     - name: Lock down nginx config for www-data # so non-root users cannot read the GX_SECRET
       ansible.builtin.file:
         state: directory

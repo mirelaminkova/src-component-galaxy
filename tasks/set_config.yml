@@ -50,32 +50,6 @@
 - name: Load Galaxy role variables
   ansible.builtin.include_vars: vars/galaxy_vars.yml
 
-- name: Ensure Galaxy storage has correct permissions
-  when: src_galaxy_storage_path is defined and src_galaxy_storage_path | length > 0
-  become: true
-  block:
-    - name: Ensure Galaxy mutable data base directory exists
-      ansible.builtin.file:
-        path: "{{ galaxy_mutable_data_dir }}"
-        state: directory
-        owner: "{{ galaxy_user }}"
-        group: "{{ galaxy_group }}"
-        mode: "0755"
-
-    - name: Ensure Galaxy mutable data subdirectories exist with correct ownership
-      ansible.builtin.file:
-        path: "{{ galaxy_mutable_data_dir }}/{{ item }}"
-        state: directory
-        owner: "{{ galaxy_user }}"
-        group: "{{ galaxy_group }}"
-        mode: "0755"
-        recurse: true
-      loop:
-        - config
-        - gravity
-        - datasets
-        - tus_data
-
 # Dump galaxy_config in a new variable.
 # Needed because galaxyproject.galaxy parses the galaxy['galaxy_config'] dict in a special way:
 # it uses a plugin designed to mimic uwsgi's non-stanadard yaml implementation.
