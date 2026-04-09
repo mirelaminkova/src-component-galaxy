@@ -6,7 +6,6 @@ runners:
   pulsar:
     load: galaxy.jobs.runners.pulsar:PulsarRESTJobRunner
 {% endif %}
-
 execution:
   default: singularity
   environments:
@@ -16,7 +15,6 @@ execution:
         - name: PATH
           action: prepend_to
           value: "{{ galaxy_mutable_data_dir }}/shed_tools:$PATH"
-
     docker:
       runner: local
       docker_enabled: true
@@ -32,9 +30,9 @@ execution:
 {% endif %}
 
     singularity:
+      singularity_volumes: {{ apptainer_volumes | join(',') }}
       runner: local
       singularity_enabled: true
-      singularity_volumes: {{ apptainer_volumes | join(',') }}
       container_resolvers:
         - type: cached_explicit_singularity
           cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
@@ -47,47 +45,29 @@ execution:
           auto_install: False
           cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/built/"
       env:
+        # Ensuring a consistent collation environment is good for reproducibility.
         - name: LC_ALL
           value: C
+        # The cache directory holds the docker containers that get converted
         - name: APPTAINER_CACHEDIR
           value: /tmp/singularity
+        # Apptainer uses a temporary directory to build the squashfs filesystem
         - name: APPTAINER_TMPDIR
           value: /tmp
 
 {% if _galaxy_has_pulsar %}
 {% for pulsar in _galaxy_pulsar_configs_raw %}
 {% set env_name = 'remote_' ~ (pulsar.name | default(pulsar.url | replace('https://', '') | replace('http://', '') | replace('.', '-') | replace('/', '-'))) %}
-
-    # ── Basic (non-interactive) environment for {{ env_name }} ──────────
-    {{ env_name }}_basic:
-      runner: pulsar
-      url: {{ pulsar.url }}
-      private_token: {{ pulsar.private_token }}
-      default_file_action: remote_transfer
-      dependency_resolution: {{ pulsar.dependency_resolution | default('remote') }}
-      manager: {{ pulsar.manager | default('_default_') }}
-{% if pulsar.pulsar_root is defined %}
-      jobs_directory: {{ pulsar.pulsar_root }}/jobs
-      persistence_directory: {{ pulsar.pulsar_root }}/persisted_data
-{% endif %}
-
-{% if pulsar.docker_enabled | default(false) | bool %}
-    # ── Docker/interactive environment for {{ env_name }} ───────────────
     {{ env_name }}:
       runner: pulsar
       url: {{ pulsar.url }}
       private_token: {{ pulsar.private_token }}
-      default_file_action: remote_transfer
       dependency_resolution: {{ pulsar.dependency_resolution | default('remote') }}
       manager: {{ pulsar.manager | default('_default_') }}
-{% if pulsar.pulsar_root is defined %}
-      jobs_directory: {{ pulsar.pulsar_root }}/jobs
-      persistence_directory: {{ pulsar.pulsar_root }}/persisted_data
-{% endif %}
-      docker_enabled: true
-      docker_set_user: {{ pulsar.docker_set_user | default('') }}
+{% if pulsar.docker_enabled | default(false) | bool %}
+      docker_enabled: {{ pulsar.docker_enabled }}
+      docker_set_user: {{ pulsar.docker_set_user | default('null') }}
       docker_memory: "{{ pulsar.docker_memory | default('8G') }}"
-      docker_sudo: false
       singularity_enabled: {{ pulsar.singularity_enabled | default(false) }}
       tmp_dir: {{ pulsar.tmp_dir | default(true) }}
       outputs_to_working_directory: {{ pulsar.outputs_to_working_directory | default(false) }}
@@ -111,11 +91,9 @@ execution:
 
 {% endfor %}
 {% endif %}
-
 tools:
-  - class: local  # expression tools, upload, etc - not parameterized for remote execution
+  - class: local # these special tools that aren't parameterized for remote execution - expression tools, upload, etc
     environment: local
-
 {% if _galaxy_has_pulsar and _galaxy_pulsar_tool_mappings | length > 0 %}
 {% for tool_mapping in _galaxy_pulsar_tool_mappings %}
   - id: {{ tool_mapping.tool_id }}
