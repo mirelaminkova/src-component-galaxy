@@ -67,11 +67,7 @@ execution:
       default_file_action: remote_transfer
       dependency_resolution: {{ pulsar.dependency_resolution | default('remote') }}
       manager: {{ pulsar.manager | default('_default_') }}
-{% if pulsar.pulsar_root is defined %}
-      jobs_directory: {{ pulsar.pulsar_root }}/jobs
-      persistence_directory: {{ pulsar.pulsar_root }}/persisted_data
-{% endif %}
-
+      cleanup_job: never
 {% if pulsar.docker_enabled | default(false) | bool %}
     # ── Docker/interactive environment for {{ env_name }} ───────────────
     {{ env_name }}:
