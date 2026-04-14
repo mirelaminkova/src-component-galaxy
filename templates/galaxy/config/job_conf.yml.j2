@@ -23,7 +23,7 @@ execution:
       docker_set_user:
       docker_sudo: false
       container_resolvers: # use defaults
-
+      outputs_to_working_directory: {{ _galaxy_use_interactive_tools | bool }}
 {% if _galaxy_use_interactive_tools %}
     {{ _galaxy_default_dispatcher }}:
       runner: dynamic
@@ -35,6 +35,7 @@ execution:
       runner: local
       singularity_enabled: true
       singularity_volumes: {{ apptainer_volumes | join(',') }}
+      outputs_to_working_directory: {{ _galaxy_use_interactive_tools | bool }}
       container_resolvers:
         - type: cached_explicit_singularity
           cache_directory: "{{ galaxy_mutable_data_dir }}/cache/singularity/explicit/"
@@ -102,7 +103,9 @@ execution:
 {% else %}
       container_resolvers:
         - type: explicit
-          require_container: True
+        - type: mulled
+        - type: build_mulled
+          require_container: true
 {% endif %}
       container_monitor_command: {{ pulsar.container_monitor_command | default('/mnt/pulsar/venv/bin/galaxy-container-monitor') }}
       container_monitor_result: {{ pulsar.container_monitor_result | default('callback') }}

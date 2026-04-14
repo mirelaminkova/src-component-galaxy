@@ -85,7 +85,7 @@ galaxy_configuration:
     interactivetools_map: "{{ _galaxy_use_interactive_tools | ternary(gie_proxy_sessions_path, omit) }}"
     galaxy_infrastructure_url: "{{ _galaxy_infrastructure_url }}"
     tus_upload_store: "{{ _galaxy_enable_tus | ternary(galaxy_tus_upload_store, omit) }}"
-    outputs_to_working_directory: "{{ _galaxy_use_interactive_tools }}"
+    #outputs_to_working_directory: "{{ _galaxy_use_interactive_tools }}"
     bootstrap_admin_api_key: "{{ _galaxy_bootstrap_api_key | default(omit) }}"
     nginx_x_accel_redirect_base: '/_x_accel_redirect'
     # CVMFS
