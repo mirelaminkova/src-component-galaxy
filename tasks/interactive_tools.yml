@@ -1,4 +1,21 @@
 ---
+# The SRC Nginx plugin >= 1.2.0 uses acme.sh and stores certificates in /etc/ssl/acme/<fqdn>/.
+# Older versions used certbot, which stored them in /etc/letsencrypt/live/<fqdn>/.
+- name: Check for acme.sh certificate (SRC Nginx plugin >= 1.2.0)
+  ansible.builtin.stat:
+    path: "{{ _galaxy_acme_cert_dir }}/fullchain.pem"
+  register: _galaxy_acme_cert
+
+- name: Set TLS certificate paths for the interactive tool proxy
+  ansible.builtin.set_fact:
+    _galaxy_tls_legacy_certbot: "{{ not _galaxy_acme_cert.stat.exists }}"
+    _galaxy_tls_cert: >-
+      {{ _galaxy_acme_cert.stat.exists | ternary(_galaxy_acme_cert_dir ~ '/fullchain.pem',
+         '/etc/letsencrypt/live/' ~ _galaxy_server_fqdn ~ '/fullchain.pem') }}
+    _galaxy_tls_key: >-
+      {{ _galaxy_acme_cert.stat.exists | ternary(_galaxy_acme_cert_dir ~ '/key.pem',
+         '/etc/letsencrypt/live/' ~ _galaxy_server_fqdn ~ '/privkey.pem') }}
+
 - name: Add interactive tool proxy conf for nginx
   ansible.builtin.template:
     src: templates/nginx/galaxy-gie-proxy.j2
