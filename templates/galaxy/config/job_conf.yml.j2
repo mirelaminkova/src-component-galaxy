@@ -23,7 +23,7 @@ runners:
 {% endfor %}
 
 execution:
-  default: singularity
+  default: {{ _galaxy_default_dispatcher if _galaxy_use_interactive_tools else _galaxy_jobs_default }}
   environments:
     local:
       runner: local

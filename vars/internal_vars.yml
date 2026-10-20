@@ -20,6 +20,9 @@ _galaxy_root: /srv/galaxy
 _galaxy_local_address: localhost:8080
 _galaxy_error_502: /var/www/galaxy502.html
 
+# Certificate directory used by the SRC Nginx plugin (acme.sh based, >= 1.2.0)
+_galaxy_acme_cert_dir: "/etc/ssl/acme/{{ rsc_nginx_service_url | default(_galaxy_server_fqdn, true) }}"
+
 _galaxy_infrastructure_url: "{{ _molecule_active | ternary('http://', 'https://') }}{{ workspace_fqdn | default('localhost', true) }}"
 
 galaxy_src_documentation: https://github.com/UtrechtUniversity/vre-docs
