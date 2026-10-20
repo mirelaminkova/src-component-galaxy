@@ -56,19 +56,23 @@ Two connection modes are supported, and both can be used at the same time:
 Copy the values from the welcome page of the SRC Pulsar Relay workspace (relay URL, relay username and password, topic prefix and the Pulsar staging directory) into the `src_galaxy_pulsar_relay_configs` parameter, as a one-line list:
 
 ```
-[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]
+[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /var/lib/pulsar/staging, docker_enabled: true}]
 ```
+
+**Add `docker_enabled: true` when using the Pulsar built into the SRC Pulsar Relay workspace.** That Pulsar has Docker (its `pulsar` user is in the `docker` group) but no Conda or other dependency resolver, and the environment's default `dependency_resolution: remote` leaves resolving tool requirements to Pulsar. Without `docker_enabled: true` nothing puts the tool's programs on the `PATH`, and every tool with requirements fails with errors such as `tool_script.sh: line 10: bwa: command not found` (exit code 127). With it, Galaxy resolves a container image for the tool (an explicit container from the tool XML, or a BioContainers "mulled" image from quay.io) and Pulsar runs the job with `docker run`, pulling the image on first use, so the Pulsar workspace needs outbound access to quay.io. Tools without requirements (e.g. `cat1`) run directly on the Pulsar workspace either way. To make such jobs fail early with "Failed to find a container when required" instead of running without a container, also add `require_container: true` to the item (it is copied into the environment, see below).
+
+Reference data: tools that use a built-in (cached) reference genome or index from Galaxy's CVMFS (`/cvmfs/data.galaxyproject.org`, see `src_galaxy_cvmfs`) pass Galaxy-side paths to the tool, and a Pulsar workspace without CVMFS cannot see them, so such jobs fail with a missing index. On the Pulsar environments, use a reference from the history ("Use a genome from history") instead, or mount the same CVMFS repository on the Pulsar workspace.
 
 For every item the component adds a `PulsarMQJobRunner` runner `pulsar_relay_<name>` (the relay credentials are runner parameters, so each relay connection gets its own runner) and a job environment `remote_<name>`. Send tools to it with `src_galaxy_pulsar_tool_mappings`, e.g. `[{tool_id: cat1, environment: remote_srcrelay}]`. Keys:
 
 * `relay_url`, `relay_username`, `relay_password` (required): the relay connection, as shown on the relay's welcome page.
-* `jobs_directory` (required): the staging directory of the Pulsar worker (`<Pulsar Root>/files/staging` for the SRC Pulsar component, `/mnt/pulsar/files/staging` without attached storage).
+* `jobs_directory` (required): the staging directory of the Pulsar worker, as shown on the welcome page (`/var/lib/pulsar/staging` for the Pulsar built into the SRC Pulsar Relay workspace without attached storage; `<Pulsar Root>/files/staging` for the SRC Pulsar component, `/mnt/pulsar/files/staging` without attached storage).
 * `relay_topic_prefix` (recommended): must be the same prefix Pulsar uses (shown on the welcome page).
 * `name` (recommended): letters, digits, `_` and `-` only; must differ from the names used in `src_galaxy_pulsar_configs`. Defaults to a name derived from `relay_url`.
 * `manager` (default `_default_`): the Pulsar job manager to use.
-* `docker_enabled` (default `false`), with `docker_memory` (default `8G`) and `docker_set_user`: run jobs in Docker on the Pulsar side. `singularity_enabled` (default `false`): run jobs in Singularity/Apptainer. `container_resolvers` overrides the default resolvers, as for REST configs.
+* `docker_enabled` (default `false`), with `docker_memory` (default `8G`) and `docker_set_user`: run jobs in Docker on the Pulsar side. Required for the Pulsar built into the SRC Pulsar Relay workspace (see above). The default container resolvers are then `explicit` and `mulled`, which only name images the remote Pulsar can pull itself (`build_mulled`/`cached_mulled` refer to images in the Galaxy host's own Docker, which Pulsar cannot use). `singularity_enabled` (default `false`): run jobs in Singularity/Apptainer. `container_resolvers` overrides the default resolvers, as for REST configs.
 * `galaxy_url` (default `https://<workspace_fqdn>`): the address Pulsar uses to download inputs from and upload outputs to Galaxy. In Galaxy 26.0 the relay (MQ) runner ignores a destination `url`, so a `url` (or `private_token`) key in a relay item is dropped; set `galaxy_url` if Galaxy must be reached at another address.
-* Any other key (e.g. `outputs_to_working_directory: true`) is copied unchanged into the `remote_<name>` environment.
+* Any other key (e.g. `outputs_to_working_directory: true`, `require_container: true`) is copied unchanged into the `remote_<name>` environment.
 
 Values in this list cannot contain `,`, `[`, `]`, `{`, `}` or `"`, cannot start with `'`, and are trimmed; `true`/`false` become booleans. Generated relay passwords (letters, digits, `-`, `_`, `.`) are fine.
 
@@ -100,7 +104,7 @@ The component takes the following parameters:
 * `src_galaxy_cvmfs`: Boolean. If true, loads references data from [CVMFS](https://training.galaxyproject.org/training-material/topics/admin/tutorials/cvmfs/tutorial.html).
 * `src_galaxy_brand`: String. Brand name to display in the Galaxy webinterface.
 * `src_galaxy_pulsar_configs`: String, one-line list of REST Pulsar servers, e.g. `[{url: https://PULSAR_HOST, private_token: TOKEN, docker_enabled: true, pulsar_root: /mnt/pulsar}]`. See [Connecting to Pulsar](#connecting-to-pulsar).
-* `src_galaxy_pulsar_relay_configs`: String, one-line list of Pulsar relay connections, e.g. `[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]`. The SRC Pulsar Relay workspace's welcome page provides the values. See [Pulsar relay mode](#pulsar-relay-mode).
+* `src_galaxy_pulsar_relay_configs`: String, one-line list of Pulsar relay connections, e.g. `[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /var/lib/pulsar/staging, docker_enabled: true}]`. The SRC Pulsar Relay workspace's welcome page provides the values; `docker_enabled: true` is needed for its built-in Pulsar. See [Pulsar relay mode](#pulsar-relay-mode).
 * `src_galaxy_pulsar_tool_mappings`: String, one-line list mapping tools to Pulsar environments, e.g. `[{tool_id: cat1, environment: remote_srcrelay}]`.
 
 ## Bootstrapping

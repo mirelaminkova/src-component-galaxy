@@ -57,7 +57,7 @@ _galaxy_pulsar_tool_mappings: >-
   {%- endif -%}
 
 # Parse Pulsar relay (message queue) configs, same one-line list format as src_galaxy_pulsar_configs, e.g.
-# [{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]
+# [{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /var/lib/pulsar/staging, docker_enabled: true}]
 # Values may not contain , [ ] { } or double quotes, and are trimmed; the values true/false become booleans.
 # step0 escapes backslashes so they survive the JSON conversion.
 _galaxy_pulsar_relay_configs: >-

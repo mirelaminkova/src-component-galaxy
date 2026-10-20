@@ -120,11 +120,11 @@ execution:
 {% endif %}
 {% endfor %}
 {% else %}
+{# Only resolvers that return an image name Pulsar can pull itself (quay.io/biocontainers): build_mulled and
+   cached_mulled refer to images that exist only in the Galaxy host's Docker, which the remote Pulsar cannot see. #}
       container_resolvers:
         - type: explicit
         - type: mulled
-        - type: build_mulled
-          require_container: true
 {% endif %}
       container_monitor_command: {{ pulsar.container_monitor_command | default('/mnt/pulsar/venv/bin/galaxy-container-monitor') }}
       container_monitor_result: {{ pulsar.container_monitor_result | default('callback') }}
@@ -164,11 +164,10 @@ execution:
 {% endif %}
 {% endfor %}
 {% elif relay.docker_enabled | default(false) | bool %}
+{# Same as the REST default above: only images the remote Pulsar can pull. #}
       container_resolvers:
         - type: explicit
         - type: mulled
-        - type: build_mulled
-          require_container: true
 {% elif relay.singularity_enabled | default(false) | bool %}
       container_resolvers:
         - type: explicit_singularity
