@@ -89,7 +89,9 @@ _galaxy_pulsar_relay_known_keys:
   - docker_set_user
   - docker_memory
   - docker_sudo
+  - docker_volumes
   - singularity_enabled
+  - singularity_volumes
   - container_resolvers
   - url
   - private_token

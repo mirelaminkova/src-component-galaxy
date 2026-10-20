@@ -108,6 +108,12 @@ execution:
       docker_set_user: {{ pulsar.docker_set_user | default('') }}
       docker_memory: "{{ pulsar.docker_memory | default('8G') }}"
       docker_sudo: false
+{% if pulsar.docker_volumes is defined %}
+      docker_volumes: {{ pulsar.docker_volumes }}
+{% elif _galaxy_enable_cvmfs | bool %}
+{# Galaxy's $defaults (expanded with the Pulsar-side paths) has no /cvmfs; built-in genomes need it in the container. #}
+      docker_volumes: "$defaults,/cvmfs:ro"
+{% endif %}
       singularity_enabled: {{ pulsar.singularity_enabled | default(false) }}
       tmp_dir: {{ pulsar.tmp_dir | default(true) }}
       outputs_to_working_directory: {{ pulsar.outputs_to_working_directory | default(false) }}
@@ -151,9 +157,20 @@ execution:
 {% endif %}
       docker_memory: {{ relay.docker_memory | default('8G') | string | to_json }}
       docker_sudo: false
+{% if relay.docker_volumes is defined %}
+      docker_volumes: {{ relay.docker_volumes | string | to_json }}
+{% elif _galaxy_enable_cvmfs | bool %}
+{# As for REST above: mount the Pulsar workspace's /cvmfs read-only into the container for built-in genomes. #}
+      docker_volumes: "$defaults,/cvmfs:ro"
+{% endif %}
 {% endif %}
 {% if relay.singularity_enabled | default(false) | bool %}
       singularity_enabled: true
+{% if relay.singularity_volumes is defined %}
+      singularity_volumes: {{ relay.singularity_volumes | string | to_json }}
+{% elif _galaxy_enable_cvmfs | bool %}
+      singularity_volumes: "$defaults,/cvmfs:ro"
+{% endif %}
 {% endif %}
 {% if relay.container_resolvers is defined %}
       container_resolvers:
