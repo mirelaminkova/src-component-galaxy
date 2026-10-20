@@ -116,6 +116,9 @@ galaxy_configuration:
       upload_dir: "{{ galaxy_tus_upload_store }}"
       port: "{{ galaxy_tusd_port }}"
 
+    # One dedicated job handler in relay mode, none otherwise (see src_galaxy_vars.yml).
+    handlers: "{{ _galaxy_gravity_handlers }}"
+
     gunicorn:
       # Listening options
       bind: "{{ _galaxy_local_address }}"

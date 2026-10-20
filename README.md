@@ -72,6 +72,8 @@ For every item the component adds a `PulsarMQJobRunner` runner `pulsar_relay_<na
 
 Values in this list cannot contain `,`, `[`, `]`, `{`, `}` or `"`, cannot start with `'`, and are trimmed; `true`/`false` become booleans. Generated relay passwords (letters, digits, `-`, `_`, `.`) are fine.
 
+When a relay is configured, the component runs **one dedicated Galaxy job handler** (Gravity `handlers`, process `handler_0` in the `job-handlers` pool) and sets `handling: assign: [db-skip-locked]` in `job_conf.yml`, so the Gunicorn web workers no longer handle jobs. This is required: every Galaxy process with a relay runner long-polls the relay and receives every Pulsar status update, and Galaxy 26.0 finishes a job from whichever process receives its update. With the two default web workers as handlers, each job was finished twice (seen as `Unable to cleanup job ... ObjectNotFound`). Keep the handler at one process while relay mode is used. Check it with `sudo galaxyctl status`; jobs in Galaxy's log then show `[pN:handler_0,...]`.
+
 Pulsar transfers job files through Galaxy's `/api/` endpoints, so keep the `src_galaxy_api_exposed` ("API exposed") parameter enabled when using Pulsar (REST or relay). The relay password ends up in Galaxy's `job_conf.yml`, which the Galaxy role writes with mode `0640` (owner `gxpriv`, group `galaxy`) in the `0750` config directory: only `gxpriv` and members of the `galaxy` group (the Galaxy service user and `www-data`, which this playbook adds to that group) can read it, not other workspace users.
 
 ### Usability of external storage

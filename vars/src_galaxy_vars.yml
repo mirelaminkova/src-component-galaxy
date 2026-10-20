@@ -103,6 +103,17 @@ _galaxy_pulsar_relay_required_keys:
 _galaxy_has_pulsar_rest: "{{ (_galaxy_pulsar_configs_raw | length > 0) | bool }}"
 _galaxy_has_pulsar_relay: "{{ (_galaxy_pulsar_relay_configs | length > 0) | bool }}"
 _galaxy_has_pulsar: "{{ (_galaxy_has_pulsar_rest or _galaxy_has_pulsar_relay) | bool }}"
+
+# Relay mode needs exactly one process that runs job runners. Every Galaxy process
+# with a relay runner long-polls the relay and receives every Pulsar status update,
+# and Galaxy 26.0 finishes a job from any process that receives its update (with
+# RabbitMQ each message reaches only one consumer). Without a dedicated handler,
+# both Gunicorn workers are job handlers and finish each job twice. With relay
+# configs, Gravity therefore runs one handler in the job-handlers pool and the job
+# configuration sets an explicit assignment method, so web workers stop handling
+# jobs. Do not raise processes above 1 while relay mode is used.
+_galaxy_gravity_handlers: >-
+  {{ {'handler': {'processes': 1, 'pools': ['job-handlers']}} if _galaxy_has_pulsar_relay | bool else {} }}
 # Note that some component parameters are also used in galaxy_vars.yml:
 # src_galaxy_storage_path
 # src_galaxy_version

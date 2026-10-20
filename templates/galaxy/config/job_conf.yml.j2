@@ -1,3 +1,11 @@
+{% if _galaxy_has_pulsar_relay | bool %}
+# Relay mode: jobs go to the single Gravity handler in the job-handlers pool, and
+# the web workers do not handle jobs (see _galaxy_gravity_handlers).
+handling:
+  assign:
+    - db-skip-locked
+
+{% endif %}
 runners:
   local:
     load: galaxy.jobs.runners.local:LocalJobRunner
