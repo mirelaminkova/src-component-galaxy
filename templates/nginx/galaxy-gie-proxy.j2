@@ -3,10 +3,12 @@ server {
     listen       *:80;
     {% else %}
     listen       *:443 ssl;
-    ssl_certificate /etc/letsencrypt/live/{{ _galaxy_server_fqdn }}/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/{{ _galaxy_server_fqdn }}/privkey.pem; # managed by Certbot
+    ssl_certificate {{ _galaxy_tls_cert }};
+    ssl_certificate_key {{ _galaxy_tls_key }};
+    {% if _galaxy_tls_legacy_certbot %}
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+    {% endif %}
     {% endif %}
 
     # Match all requests for the interactive tools subdomain
