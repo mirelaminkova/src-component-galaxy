@@ -32,6 +32,7 @@ _galaxy_workflow_files: "{{ src_galaxy_workflow_files | default('') | split(',')
 
 _galaxy_pulsar_configs_input: "{{ src_galaxy_pulsar_configs | default('', true) }}"
 _galaxy_pulsar_tool_mappings_input: "{{ src_galaxy_pulsar_tool_mappings | default('', true) }}"
+_galaxy_pulsar_relay_configs_input: "{{ src_galaxy_pulsar_relay_configs | default('', true) }}"
 
 # Parse Pulsar configs
 # The Pulsar config redirects users to copy and pass yml strings via the component vars. The config normalises the passed strings  
@@ -55,8 +56,53 @@ _galaxy_pulsar_tool_mappings: >-
     {{ step2 | from_json }}
   {%- endif -%}
 
-# Check if there are  pulsar configs
-_galaxy_has_pulsar: "{{ (_galaxy_pulsar_configs_raw | length > 0) | bool }}"
+# Parse Pulsar relay (message queue) configs, same one-line list format as src_galaxy_pulsar_configs, e.g.
+# [{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]
+# Values may not contain , [ ] { } or double quotes, and are trimmed; the values true/false become booleans.
+# step0 escapes backslashes so they survive the JSON conversion.
+_galaxy_pulsar_relay_configs: >-
+  {%- if _galaxy_pulsar_relay_configs_input == '' or _galaxy_pulsar_relay_configs_input == '[]' -%}
+  []
+  {%- else -%}
+    {%- set step0 = _galaxy_pulsar_relay_configs_input | regex_replace('\\\\', '\\\\\\\\') -%}
+    {%- set step1 = step0 | regex_replace('([{,]\s*)(\w+):', '\\1"\\2":') -%}
+    {%- set step2 = step1 | regex_replace(':\s*([^,\[\]{}"\'\s][^,\[\]{}]*?)(\s*[,}\]])', ': "\\1"\\2') -%}
+    {%- set step3 = step2 | regex_replace(':\s*"(true|false)"', ': \\1') -%}
+    {{ step3 | from_json }}
+  {%- endif -%}
+
+# Relay config keys handled explicitly by job_conf.yml.j2. Any other key of a relay item is passed through
+# unchanged to its environment (e.g. outputs_to_working_directory, tmp_dir). The MQ runner ignores the REST-only
+# destination keys url and private_token, so they are dropped.
+_galaxy_pulsar_relay_known_keys:
+  - name
+  - relay_url
+  - relay_username
+  - relay_password
+  - relay_topic_prefix
+  - galaxy_url
+  - jobs_directory
+  - manager
+  - dependency_resolution
+  - default_file_action
+  - docker_enabled
+  - docker_set_user
+  - docker_memory
+  - docker_sudo
+  - singularity_enabled
+  - container_resolvers
+  - url
+  - private_token
+_galaxy_pulsar_relay_required_keys:
+  - relay_url
+  - relay_username
+  - relay_password
+  - jobs_directory
+
+# Check if there are pulsar configs (REST and/or relay)
+_galaxy_has_pulsar_rest: "{{ (_galaxy_pulsar_configs_raw | length > 0) | bool }}"
+_galaxy_has_pulsar_relay: "{{ (_galaxy_pulsar_relay_configs | length > 0) | bool }}"
+_galaxy_has_pulsar: "{{ (_galaxy_has_pulsar_rest or _galaxy_has_pulsar_relay) | bool }}"
 # Note that some component parameters are also used in galaxy_vars.yml:
 # src_galaxy_storage_path
 # src_galaxy_version

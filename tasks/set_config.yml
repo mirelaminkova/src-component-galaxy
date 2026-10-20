@@ -12,6 +12,32 @@
         that:
           - "['singularity', 'docker', 'local'] is contains(_galaxy_jobs_default)"
 
+    # Loop over the key names only, so relay passwords never end up in the task output.
+    - name: Assert Pulsar relay configs are complete
+      ansible.builtin.assert:
+        that:
+          - _galaxy_pulsar_relay_required_keys | difference(item) | length == 0
+        fail_msg: >-
+          Every src_galaxy_pulsar_relay_configs item needs {{ _galaxy_pulsar_relay_required_keys | join(', ') }}
+          (this item has {{ item | join(', ') }}).
+        quiet: true
+      loop: "{{ _galaxy_pulsar_relay_configs | map('dict2items') | map('map', attribute='key') | map('list') | list }}"
+
+    - name: Assert Pulsar relay names are valid and unique
+      vars:
+        _relay_names: "{{ _galaxy_pulsar_relay_configs | selectattr('name', 'defined') | map(attribute='name') | list }}"
+        _rest_names: "{{ _galaxy_pulsar_configs_raw | selectattr('name', 'defined') | map(attribute='name') | list }}"
+      ansible.builtin.assert:
+        that:
+          - _relay_names | reject('match', '^[A-Za-z0-9_-]+$') | list | length == 0
+          - _relay_names | unique | length == _relay_names | length
+          - _relay_names | intersect(_rest_names) | length == 0
+        fail_msg: >-
+          Names in src_galaxy_pulsar_relay_configs may only contain letters, digits, _ and -,
+          must be unique, and must differ from the names in src_galaxy_pulsar_configs.
+        quiet: true
+      when: _galaxy_has_pulsar_relay
+
 - name: Load interactive tools variables
   ansible.builtin.include_vars: vars/interactive_tools_vars.yml
 

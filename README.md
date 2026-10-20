@@ -46,6 +46,34 @@ on the Galaxy machine won't have access to this secret key, they cannot directly
 
 A Galaxy machine can be connected to Pulsar inside the SRC, following the [SRC component Pulsar](https://github.com/ErasmusMC-Bioinformatics/src-component-pulsar) instructions. 
 
+Two connection modes are supported, and both can be used at the same time:
+
+* **REST** (`src_galaxy_pulsar_configs`): Galaxy contacts the Pulsar server's HTTP API directly, so the Pulsar workspace must be reachable from Galaxy.
+* **Relay** (`src_galaxy_pulsar_relay_configs`): Galaxy and Pulsar both connect out to a [Pulsar relay](https://pulsar.readthedocs.io/) (for example an *SRC Pulsar Relay* workspace) and exchange job messages through it, so Pulsar does not need to be reachable from Galaxy.
+
+#### Pulsar relay mode
+
+Copy the values from the welcome page of the SRC Pulsar Relay workspace (relay URL, relay username and password, topic prefix and the Pulsar staging directory) into the `src_galaxy_pulsar_relay_configs` parameter, as a one-line list:
+
+```
+[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]
+```
+
+For every item the component adds a `PulsarMQJobRunner` runner `pulsar_relay_<name>` (the relay credentials are runner parameters, so each relay connection gets its own runner) and a job environment `remote_<name>`. Send tools to it with `src_galaxy_pulsar_tool_mappings`, e.g. `[{tool_id: cat1, environment: remote_srcrelay}]`. Keys:
+
+* `relay_url`, `relay_username`, `relay_password` (required): the relay connection, as shown on the relay's welcome page.
+* `jobs_directory` (required): the staging directory of the Pulsar worker (`<Pulsar Root>/files/staging` for the SRC Pulsar component, `/mnt/pulsar/files/staging` without attached storage).
+* `relay_topic_prefix` (recommended): must be the same prefix Pulsar uses (shown on the welcome page).
+* `name` (recommended): letters, digits, `_` and `-` only; must differ from the names used in `src_galaxy_pulsar_configs`. Defaults to a name derived from `relay_url`.
+* `manager` (default `_default_`): the Pulsar job manager to use.
+* `docker_enabled` (default `false`), with `docker_memory` (default `8G`) and `docker_set_user`: run jobs in Docker on the Pulsar side. `singularity_enabled` (default `false`): run jobs in Singularity/Apptainer. `container_resolvers` overrides the default resolvers, as for REST configs.
+* `galaxy_url` (default `https://<workspace_fqdn>`): the address Pulsar uses to download inputs from and upload outputs to Galaxy. In Galaxy 26.0 the relay (MQ) runner ignores a destination `url`, so a `url` (or `private_token`) key in a relay item is dropped; set `galaxy_url` if Galaxy must be reached at another address.
+* Any other key (e.g. `outputs_to_working_directory: true`) is copied unchanged into the `remote_<name>` environment.
+
+Values in this list cannot contain `,`, `[`, `]`, `{`, `}` or `"`, cannot start with `'`, and are trimmed; `true`/`false` become booleans. Generated relay passwords (letters, digits, `-`, `_`, `.`) are fine.
+
+Pulsar transfers job files through Galaxy's `/api/` endpoints, so keep the `src_galaxy_api_exposed` ("API exposed") parameter enabled when using Pulsar (REST or relay). The relay password ends up in Galaxy's `job_conf.yml`, which the Galaxy role writes with mode `0640` (owner `gxpriv`, group `galaxy`) in the `0750` config directory: only `gxpriv` and members of the `galaxy` group (the Galaxy service user and `www-data`, which this playbook adds to that group) can read it, not other workspace users.
+
 ### Usability of external storage
 
 If you attach additional networked storage to the workspace, you can set `src_galaxy_storage_path` to a path on that storage volume. If your storage is e.g. called "galaxy storage", set the parameter to: `/data/galaxy_storage/datadir`. In theory, this should allow you to re-use datasets, tools, etc. from previous Galaxy workspaces.
@@ -69,6 +97,9 @@ The component takes the following parameters:
 * `src_galaxy_enable_tus`: Boolean. If true, enable support for performant and resumable uploads using [tusd](https://training.galaxyproject.org/training-material/topics/admin/tutorials/tus/tutorial.html).
 * `src_galaxy_cvmfs`: Boolean. If true, loads references data from [CVMFS](https://training.galaxyproject.org/training-material/topics/admin/tutorials/cvmfs/tutorial.html).
 * `src_galaxy_brand`: String. Brand name to display in the Galaxy webinterface.
+* `src_galaxy_pulsar_configs`: String, one-line list of REST Pulsar servers, e.g. `[{url: https://PULSAR_HOST, private_token: TOKEN, docker_enabled: true, pulsar_root: /mnt/pulsar}]`. See [Connecting to Pulsar](#connecting-to-pulsar).
+* `src_galaxy_pulsar_relay_configs`: String, one-line list of Pulsar relay connections, e.g. `[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]`. The SRC Pulsar Relay workspace's welcome page provides the values. See [Pulsar relay mode](#pulsar-relay-mode).
+* `src_galaxy_pulsar_tool_mappings`: String, one-line list mapping tools to Pulsar environments, e.g. `[{tool_id: cat1, environment: remote_srcrelay}]`.
 
 ## Bootstrapping
 

@@ -2,10 +2,25 @@ runners:
   local:
     load: galaxy.jobs.runners.local:LocalJobRunner
     workers: 4
-{% if _galaxy_has_pulsar %}
+{% if _galaxy_has_pulsar_rest %}
   pulsar:
     load: galaxy.jobs.runners.pulsar:PulsarRESTJobRunner
 {% endif %}
+{% for relay in _galaxy_pulsar_relay_configs %}
+{% set relay_name = relay.name | default(relay.relay_url | replace('https://', '') | replace('http://', '') | replace('.', '-') | replace('/', '-') | replace(':', '-')) %}
+  # Pulsar relay (message queue) runner for remote_{{ relay_name }}. The relay credentials
+  # are runner parameters, so every relay connection gets its own runner. In Galaxy 26.0 the
+  # MQ runner ignores a destination url: Pulsar reaches Galaxy's /api/ via galaxy_url.
+  pulsar_relay_{{ relay_name }}:
+    load: galaxy.jobs.runners.pulsar:PulsarMQJobRunner
+    relay_url: {{ relay.relay_url | to_json }}
+    relay_username: {{ relay.relay_username | to_json }}
+    relay_password: {{ relay.relay_password | string | to_json }}
+{% if relay.relay_topic_prefix is defined %}
+    relay_topic_prefix: {{ relay.relay_topic_prefix | string | to_json }}
+{% endif %}
+    galaxy_url: {{ relay.galaxy_url | default('https://' ~ _galaxy_server_fqdn) | to_json }}
+{% endfor %}
 
 execution:
   default: singularity
@@ -108,6 +123,52 @@ execution:
       container_monitor_get_ip_method: {{ pulsar.container_monitor_get_ip_method | default('command:echo ' ~ (pulsar.name | default(pulsar.url | replace('https://','') | replace('http://','')))) }}
 {% endif %}
 
+{% endfor %}
+{% for relay in _galaxy_pulsar_relay_configs %}
+{% set relay_name = relay.name | default(relay.relay_url | replace('https://', '') | replace('http://', '') | replace('.', '-') | replace('/', '-') | replace(':', '-')) %}
+
+    # ── Pulsar relay environment for remote_{{ relay_name }} ──────────
+    remote_{{ relay_name }}:
+      runner: pulsar_relay_{{ relay_name }}
+      jobs_directory: {{ relay.jobs_directory | to_json }}
+      manager: {{ relay.manager | default('_default_') | to_json }}
+      dependency_resolution: {{ relay.dependency_resolution | default('remote') | to_json }}
+      default_file_action: {{ relay.default_file_action | default('remote_transfer') | to_json }}
+{% if relay.docker_enabled | default(false) | bool %}
+      docker_enabled: true
+{% if relay.docker_set_user is defined %}
+      docker_set_user: {{ relay.docker_set_user | string | to_json }}
+{% else %}
+      docker_set_user:
+{% endif %}
+      docker_memory: {{ relay.docker_memory | default('8G') | string | to_json }}
+      docker_sudo: false
+{% endif %}
+{% if relay.singularity_enabled | default(false) | bool %}
+      singularity_enabled: true
+{% endif %}
+{% if relay.container_resolvers is defined %}
+      container_resolvers:
+{% for resolver in relay.container_resolvers %}
+        - type: {{ resolver.type }}
+{% if resolver.require_container is defined %}
+          require_container: {{ resolver.require_container }}
+{% endif %}
+{% endfor %}
+{% elif relay.docker_enabled | default(false) | bool %}
+      container_resolvers:
+        - type: explicit
+        - type: mulled
+        - type: build_mulled
+          require_container: true
+{% elif relay.singularity_enabled | default(false) | bool %}
+      container_resolvers:
+        - type: explicit_singularity
+        - type: mulled_singularity
+{% endif %}
+{% for key, value in relay.items() if key not in _galaxy_pulsar_relay_known_keys %}
+      {{ key }}: {{ value | to_json }}
+{% endfor %}
 {% endfor %}
 {% endif %}
 

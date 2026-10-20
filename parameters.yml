@@ -6,3 +6,7 @@ src_galaxy_interactive_tools: 'false'
 workspace_fqdn: set_to_your_fqdn
 src_galaxy_cvmfs: 'true'
 src_galaxy_jobs_default: singularity
+# Pulsar (optional, one-line lists as pasted in the ResearchCloud wizard). Relay values come from the SRC Pulsar Relay welcome page.
+# src_galaxy_pulsar_configs: "[{url: https://PULSAR_HOST, private_token: TOKEN, docker_enabled: true, pulsar_root: /mnt/pulsar}]"
+# src_galaxy_pulsar_relay_configs: "[{name: srcrelay, relay_url: https://RELAY_HOST, relay_username: galaxy-pulsar, relay_password: SECRET, relay_topic_prefix: src, jobs_directory: /mnt/pulsar/files/staging}]"
+# src_galaxy_pulsar_tool_mappings: "[{tool_id: cat1, environment: remote_srcrelay}]"
