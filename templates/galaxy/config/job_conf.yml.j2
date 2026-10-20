@@ -1,3 +1,10 @@
+{# Volumes for containers that run on a Pulsar workspace (REST and relay, Docker and Apptainer). Not Galaxy's
+   $defaults: for Pulsar jobs that expands to these job paths (container_classes.py, "pulsar" job directory
+   branch) but also appends Galaxy-host paths (tool_data_path, galaxy_data_manager_data_path, shed_tool_data_path,
+   library_import_dir) that do not exist on the Pulsar workspace; Docker then creates empty directories there and
+   Apptainer fails every job ("mount source ... doesn't exist"). Galaxy drops $tool_directory for tools without
+   one. /cvmfs is added for built-in genomes when CVMFS is enabled (src_galaxy_cvmfs). #}
+{% set _pulsar_container_volumes = (['$job_directory:ro', '$tool_directory:ro', '$job_directory/outputs:rw', '$working_directory:rw'] + (['/cvmfs:ro'] if _galaxy_enable_cvmfs | bool else [])) | join(',') %}
 {% if _galaxy_has_pulsar_relay | bool %}
 # Relay mode: jobs go to the single Gravity handler in the job-handlers pool, and
 # the web workers do not handle jobs (see _galaxy_gravity_handlers).
@@ -108,12 +115,7 @@ execution:
       docker_set_user: {{ pulsar.docker_set_user | default('') }}
       docker_memory: "{{ pulsar.docker_memory | default('8G') }}"
       docker_sudo: false
-{% if pulsar.docker_volumes is defined %}
-      docker_volumes: {{ pulsar.docker_volumes }}
-{% elif _galaxy_enable_cvmfs | bool %}
-{# Galaxy's $defaults (expanded with the Pulsar-side paths) has no /cvmfs; built-in genomes need it in the container. #}
-      docker_volumes: "$defaults,/cvmfs:ro"
-{% endif %}
+      docker_volumes: "{{ pulsar.docker_volumes | default(_pulsar_container_volumes) }}"
       singularity_enabled: {{ pulsar.singularity_enabled | default(false) }}
       tmp_dir: {{ pulsar.tmp_dir | default(true) }}
       outputs_to_working_directory: {{ pulsar.outputs_to_working_directory | default(false) }}
@@ -121,9 +123,9 @@ execution:
       container_resolvers:
 {% for resolver in pulsar.container_resolvers %}
         - type: {{ resolver.type }}
-{% if resolver.require_container is defined %}
-          require_container: {{ resolver.require_container }}
-{% endif %}
+{% for key, value in resolver.items() if key != 'type' %}
+          {{ key }}: {{ value }}
+{% endfor %}
 {% endfor %}
 {% else %}
 {# Only resolvers that return an image name Pulsar can pull itself (quay.io/biocontainers): build_mulled and
@@ -157,28 +159,19 @@ execution:
 {% endif %}
       docker_memory: {{ relay.docker_memory | default('8G') | string | to_json }}
       docker_sudo: false
-{% if relay.docker_volumes is defined %}
-      docker_volumes: {{ relay.docker_volumes | string | to_json }}
-{% elif _galaxy_enable_cvmfs | bool %}
-{# As for REST above: mount the Pulsar workspace's /cvmfs read-only into the container for built-in genomes. #}
-      docker_volumes: "$defaults,/cvmfs:ro"
-{% endif %}
+      docker_volumes: {{ relay.docker_volumes | default(_pulsar_container_volumes) | string | to_json }}
 {% endif %}
 {% if relay.singularity_enabled | default(false) | bool %}
       singularity_enabled: true
-{% if relay.singularity_volumes is defined %}
-      singularity_volumes: {{ relay.singularity_volumes | string | to_json }}
-{% elif _galaxy_enable_cvmfs | bool %}
-      singularity_volumes: "$defaults,/cvmfs:ro"
-{% endif %}
+      singularity_volumes: {{ relay.singularity_volumes | default(_pulsar_container_volumes) | string | to_json }}
 {% endif %}
 {% if relay.container_resolvers is defined %}
       container_resolvers:
 {% for resolver in relay.container_resolvers %}
-        - type: {{ resolver.type }}
-{% if resolver.require_container is defined %}
-          require_container: {{ resolver.require_container }}
-{% endif %}
+        - type: {{ resolver.type | to_json }}
+{% for key, value in resolver.items() if key != 'type' %}
+          {{ key }}: {{ value | to_json }}
+{% endfor %}
 {% endfor %}
 {% elif relay.docker_enabled | default(false) | bool %}
 {# Same as the REST default above: only images the remote Pulsar can pull. #}
@@ -188,7 +181,16 @@ execution:
 {% elif relay.singularity_enabled | default(false) | bool %}
       container_resolvers:
         - type: explicit_singularity
+{% if _galaxy_enable_cvmfs | bool %}
+{# Prebuilt BioContainers images shared by Galaxy and Pulsar through CVMFS (the Pulsar workspace must mount it too). #}
+        - type: cached_mulled_singularity
+          cache_directory: /cvmfs/singularity.galaxyproject.org/all
+{% endif %}
+{# Fallback: returns docker://quay.io/biocontainers/... and Apptainer on the Pulsar workspace pulls it. Keep auto_install
+   true: with false this resolver returns the path of the copy it pulls into the Galaxy host's own cache, which the
+   Pulsar workspace cannot see (galaxy.tool_util.deps.container_resolvers.mulled.MulledDockerContainerResolver.resolve). #}
         - type: mulled_singularity
+          auto_install: true
 {% endif %}
 {% for key, value in relay.items() if key not in _galaxy_pulsar_relay_known_keys %}
       {{ key }}: {{ value | to_json }}
