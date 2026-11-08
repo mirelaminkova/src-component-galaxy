@@ -65,7 +65,7 @@ Reference data: tools that use a built-in (cached) reference genome or index pas
 
 For every item the component adds a `PulsarMQJobRunner` runner `pulsar_relay_<name>` (the relay credentials are runner parameters, so each relay connection gets its own runner) and a job environment `remote_<name>`. Send tools to it with `src_galaxy_pulsar_tool_mappings`, e.g. `[{tool_id: cat1, environment: remote_srcrelay}]`. Keys:
 
-* `relay_url`, `relay_username`, `relay_password` (required): the relay connection, as shown on the relay's welcome page.
+* `relay_url`, `relay_username`, `relay_password` (required): the relay connection, as shown on the relay's welcome page. `relay_url` must use `https://` (Galaxy sends the relay password to it); plain `http://` is only accepted for `localhost`/`127.0.0.1`.
 * `jobs_directory` (required): the staging directory of the Pulsar worker, as shown on the welcome page (`/var/lib/pulsar/staging` for the Pulsar built into the SRC Pulsar Relay workspace without attached storage; `<Pulsar Root>/files/staging` for the SRC Pulsar component, `/mnt/pulsar/files/staging` without attached storage).
 * `relay_topic_prefix` (recommended): must be the same prefix Pulsar uses (shown on the welcome page).
 * `name` (recommended): letters, digits, `_` and `-` only; must differ from the names used in `src_galaxy_pulsar_configs`. Defaults to a name derived from `relay_url`.
