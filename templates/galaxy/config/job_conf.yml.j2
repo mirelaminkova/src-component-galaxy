@@ -34,6 +34,11 @@ runners:
 {% if relay.relay_topic_prefix is defined %}
     relay_topic_prefix: {{ relay.relay_topic_prefix | string | to_json }}
 {% endif %}
+{# The relay topics are named <prefix>_<topic>_<manager> after the runner's manager (Pulsar's
+   RelayClientManager); a destination manager is only used by the REST interface. #}
+{% if relay.manager is defined and relay.manager | string != '_default_' %}
+    manager: {{ relay.manager | string | to_json }}
+{% endif %}
     galaxy_url: {{ relay.galaxy_url | default('https://' ~ _galaxy_server_fqdn) | to_json }}
 {% endfor %}
 
@@ -147,7 +152,6 @@ execution:
     remote_{{ relay_name }}:
       runner: pulsar_relay_{{ relay_name }}
       jobs_directory: {{ relay.jobs_directory | to_json }}
-      manager: {{ relay.manager | default('_default_') | to_json }}
       dependency_resolution: {{ relay.dependency_resolution | default('remote') | to_json }}
       default_file_action: {{ relay.default_file_action | default('remote_transfer') | to_json }}
 {% if relay.docker_enabled | default(false) | bool %}
