@@ -38,6 +38,20 @@
         quiet: true
       when: _galaxy_has_pulsar_relay
 
+    # Galaxy logs in to the relay with the relay password, so it must only travel over TLS.
+    # Plain http is accepted for a relay on the same host only. Shows the URLs, never passwords.
+    - name: Assert Pulsar relay URLs use https
+      vars:
+        _relay_urls: "{{ _galaxy_pulsar_relay_configs | map(attribute='relay_url') | map('string') | list }}"
+      ansible.builtin.assert:
+        that:
+          - _relay_urls | reject('match', '^https://[^/]+') | reject('match', '^http://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?(/|$)') | list | length == 0
+        fail_msg: >-
+          Every relay_url in src_galaxy_pulsar_relay_configs must start with https:// (http only for localhost):
+          {{ _relay_urls | join(', ') }}
+        quiet: true
+      when: _galaxy_has_pulsar_relay
+
 - name: Load interactive tools variables
   ansible.builtin.include_vars: vars/interactive_tools_vars.yml
 
