@@ -1,0 +1,13 @@
+---
+# Print the nginx auth mode of the /api/ location, e.g.:
+#   ansible-playbook -i localhost, -c local tests/nginx_api_auth.yml -e src_galaxy_api_exposed=false
+- name: Show the nginx /api/ auth mode
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Run the component's variable loading and sanity checks
+      ansible.builtin.import_tasks: ../tasks/set_config.yml
+
+    - name: Show api auth
+      ansible.builtin.debug:
+        msg: "API_AUTH={{ (galaxy_nginx_proxy_config | selectattr('name', 'eq', 'api') | first).auth }}"

@@ -12,6 +12,17 @@
         that:
           - "['singularity', 'docker', 'local'] is contains(_galaxy_jobs_default)"
 
+    # Pulsar (REST and relay) downloads inputs from and uploads outputs to Galaxy's /api/ with a
+    # job key; behind SRAM those requests get the login redirect and every Pulsar job fails.
+    - name: Assert the API is exposed when Pulsar is used
+      ansible.builtin.assert:
+        that:
+          - not _galaxy_has_pulsar | bool or _galaxy_api_exposed | bool
+        fail_msg: >-
+          src_galaxy_pulsar_configs / src_galaxy_pulsar_relay_configs need src_galaxy_api_exposed enabled:
+          Pulsar transfers job files through Galaxy's /api/.
+        quiet: true
+
     # Loop over the key names only, so relay passwords never end up in the task output.
     - name: Assert Pulsar relay configs are complete
       ansible.builtin.assert:
