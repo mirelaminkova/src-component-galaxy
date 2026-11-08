@@ -1,0 +1,20 @@
+---
+# Render templates/galaxy/config/job_conf.yml.j2 locally with the component's own variable
+# logic and sanity checks (tasks/set_config.yml), without installing Galaxy. Used by
+# tests/test_job_conf_render.py, e.g.:
+#   ansible-playbook -i localhost, -c local tests/render_job_conf.yml \
+#     -e @parameters.yml -e render_dest=/tmp/job_conf.yml
+- name: Render job_conf.yml for tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    render_dest: "{{ lookup('env', 'PWD') }}/job_conf.rendered.yml"
+  tasks:
+    - name: Run the component's variable loading and sanity checks
+      ansible.builtin.import_tasks: ../tasks/set_config.yml
+
+    - name: Render job_conf.yml
+      ansible.builtin.template:
+        src: "{{ playbook_dir | dirname }}/templates/galaxy/config/job_conf.yml.j2"
+        dest: "{{ render_dest }}"
+        mode: "0600"
